@@ -1,0 +1,8 @@
+framework:
+  - terraform
+skip-path:
+  - examples/
+  - tests/
+  - wrappers/
+quiet: true
+compact: true
