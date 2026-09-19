@@ -26,14 +26,14 @@ module "framework" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
 
 ## Modules
@@ -43,13 +43,13 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_backup_framework.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/backup_framework) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_controls"></a> [controls](#input\_controls) | Map of controls keyed by AWS Backup Audit Manager control name. Each control has optional `input_parameters` (map of parameter name to value) and an optional `scope` (`compliance_resource_ids`, `compliance_resource_types`, `tags` with a single entry) | <pre>map(object({<br/>    input_parameters = optional(map(string), {})<br/>    scope = optional(object({<br/>      compliance_resource_ids   = optional(list(string))<br/>      compliance_resource_types = optional(list(string))<br/>      tags                      = optional(map(string))<br/>    }))<br/>  }))</pre> | n/a | yes |
 | <a name="input_create"></a> [create](#input\_create) | Determines whether resources will be created (affects all resources) | `bool` | `true` | no |
 | <a name="input_description"></a> [description](#input\_description) | Description of the framework | `string` | `null` | no |
@@ -61,7 +61,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_arn"></a> [arn](#output\_arn) | The ARN of the framework |
 | <a name="output_deployment_status"></a> [deployment\_status](#output\_deployment\_status) | The deployment status of the framework: `CREATE_IN_PROGRESS`, `UPDATE_IN_PROGRESS`, `DELETE_IN_PROGRESS`, `COMPLETED` or `FAILED` |
 | <a name="output_id"></a> [id](#output\_id) | The name of the framework |

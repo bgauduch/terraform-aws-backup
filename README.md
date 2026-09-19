@@ -146,26 +146,26 @@ cd tests/e2e && go test -v -timeout 120m ./...
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.24 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.24 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_plan"></a> [plan](#module\_plan) | ./modules/plan | n/a |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_backup_logically_air_gapped_vault.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/backup_logically_air_gapped_vault) | resource |
 | [aws_backup_vault.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/backup_vault) | resource |
 | [aws_backup_vault_lock_configuration.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/backup_vault_lock_configuration) | resource |
@@ -181,7 +181,7 @@ cd tests/e2e && go test -v -timeout 120m ./...
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_name"></a> [name](#input\_name) | Name used as the default for the vault, the IAM role and the air-gapped vault | `string` | n/a | yes |
 | <a name="input_air_gapped_vault_kms_key_arn"></a> [air\_gapped\_vault\_kms\_key\_arn](#input\_air\_gapped\_vault\_kms\_key\_arn) | ARN of the KMS key used to encrypt the logically air-gapped vault. Defaults to the AWS managed key | `string` | `null` | no |
 | <a name="input_air_gapped_vault_max_retention_days"></a> [air\_gapped\_vault\_max\_retention\_days](#input\_air\_gapped\_vault\_max\_retention\_days) | The maximum retention period, in days, that the logically air-gapped vault retains its recovery points | `number` | `35` | no |
@@ -220,7 +220,7 @@ cd tests/e2e && go test -v -timeout 120m ./...
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_air_gapped_vault_arn"></a> [air\_gapped\_vault\_arn](#output\_air\_gapped\_vault\_arn) | The ARN of the logically air-gapped vault |
 | <a name="output_air_gapped_vault_id"></a> [air\_gapped\_vault\_id](#output\_air\_gapped\_vault\_id) | The name of the logically air-gapped vault |
 | <a name="output_iam_role_arn"></a> [iam\_role\_arn](#output\_iam\_role\_arn) | The ARN of the IAM role used by backup selections, created or provided |
