@@ -170,3 +170,6 @@ jobs:
           tflint-version: ${{ env.TFLINT_VERSION }}
           terraform-docs-version: ${{ env.TERRAFORM_DOCS_VERSION }}
           install-hcledit: true
+        env:
+          # trivy and checkov are not on the runner; security.yml runs them
+          SKIP: terraform_trivy,terraform_checkov
