@@ -1,0 +1,26 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  unit:
+    name: Terraform unit tests (mocked providers)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Init
+        run: terraform init -backend=false
+
+      - name: Unit tests
+        run: terraform test -filter=tests/unit_root.tftest.hcl -filter=tests/unit_plan.tftest.hcl -filter=tests/unit_report.tftest.hcl -filter=tests/unit_restore_testing.tftest.hcl -filter=tests/unit_framework.tftest.hcl
