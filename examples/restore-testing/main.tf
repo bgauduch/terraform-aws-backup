@@ -61,6 +61,7 @@ module "restore_testing" {
   selection_window_days = 7
 
   # The module role carries the AWS managed restore policy required by restore tests
+  # Source: https://docs.aws.amazon.com/aws-backup/latest/devguide/restore-testing.html (2026-10-03)
   iam_role_arn = module.backup.iam_role_arn
 
   selections = {

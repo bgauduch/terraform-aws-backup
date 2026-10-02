@@ -2,6 +2,8 @@ provider "aws" {
   region = local.region
 }
 
+data "aws_partition" "current" {}
+
 locals {
   region = "eu-west-1"
   name   = "backup-ex-${basename(path.cwd)}"
@@ -60,6 +62,44 @@ module "plan" {
 }
 
 ################################################################################
+# Backup Module, plans only, against the same vault and role
+################################################################################
+
+module "backup" {
+  source = "../.."
+
+  name = "${local.name}-root"
+
+  create_vault        = false
+  existing_vault_name = aws_backup_vault.existing.name
+
+  create_iam_role = false
+  iam_role_arn    = aws_iam_role.existing.arn
+
+  plans = {
+    weekly = {
+      name = "${local.name}-weekly"
+      rules = [{
+        name     = "weekly"
+        schedule = "cron(0 6 ? * SAT *)"
+        lifecycle = {
+          delete_after = 35
+        }
+      }]
+      selections = {
+        tables = {
+          resources = [aws_dynamodb_table.this.arn]
+        }
+      }
+    }
+  }
+
+  tags = local.tags
+
+  depends_on = [aws_iam_role_policy_attachment.existing]
+}
+
+################################################################################
 # Supporting resources: the existing vault and role
 ################################################################################
 
@@ -74,6 +114,7 @@ data "aws_iam_policy_document" "assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
 
+    # Source: https://docs.aws.amazon.com/aws-backup/latest/devguide/iam-service-roles.html (2026-10-03)
     principals {
       type        = "Service"
       identifiers = ["backup.amazonaws.com"]
@@ -89,8 +130,9 @@ resource "aws_iam_role" "existing" {
 }
 
 resource "aws_iam_role_policy_attachment" "existing" {
-  role       = aws_iam_role.existing.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
+  role = aws_iam_role.existing.name
+  # Source: https://docs.aws.amazon.com/aws-backup/latest/devguide/security-iam-awsmanpol.html (2026-10-03)
+  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
 }
 
 resource "aws_dynamodb_table" "this" {

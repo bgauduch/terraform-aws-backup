@@ -3,6 +3,7 @@ locals {
 
   iam_role_arn = local.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
 
+  # Source: https://docs.aws.amazon.com/aws-backup/latest/devguide/security-iam-awsmanpol.html (2026-10-03)
   iam_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
   iam_role_policy_arns = toset(concat(
     [
@@ -29,6 +30,7 @@ data "aws_iam_policy_document" "assume_role" {
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
+    # Source: https://docs.aws.amazon.com/aws-backup/latest/devguide/iam-service-roles.html (2026-10-03)
     principals {
       type        = "Service"
       identifiers = ["backup.amazonaws.com"]

@@ -19,6 +19,7 @@ module "plan" {
 
   tags = var.tags
 
-  # Selections are validated by AWS Backup against the role permissions at creation time
+  # IAM is eventually consistent: role policies are attached before the selections use the role
+  # Source: https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_general.html (2026-10-03)
   depends_on = [aws_iam_role_policy_attachment.this]
 }

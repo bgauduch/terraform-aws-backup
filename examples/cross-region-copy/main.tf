@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   region           = "eu-west-1"
-  region_secondary = "eu-west-3"
+  region_secondary = "us-east-1"
   name             = "backup-ex-${basename(path.cwd)}"
 
   tags = {

@@ -1,4 +1,4 @@
-# Simple AWS Backup
+# Basic AWS Backup
 
 Configuration in this directory creates a backup vault encrypted with the AWS managed key, the IAM role assumed by AWS Backup and a daily backup plan selecting resources by tag.
 

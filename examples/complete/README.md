@@ -2,7 +2,7 @@
 
 Configuration in this directory creates:
 
-- a backup vault encrypted with a customer managed KMS key, locked in governance mode, allowing cross-account copies from the current account, with failure notifications sent to an SNS topic
+- a backup vault encrypted with a customer managed KMS key, locked in compliance mode with a 365-day grace period, with a vault policy allowing cross-account copies from the current account, with failure notifications sent to an SNS topic
 - a logically air-gapped vault
 - the IAM role assumed by AWS Backup, extended with item-level restore and KMS permissions
 - a backup plan with a daily and a monthly rule, selecting resources by tag and by ARN with conditions
@@ -39,19 +39,23 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Source | Version |
 | ---- | ------ | ------- |
 | <a name="module_backup"></a> [backup](#module\_backup) | ../.. | n/a |
+| <a name="module_disabled"></a> [disabled](#module\_disabled) | ../.. | n/a |
 
 ## Resources
 
 | Name | Type |
 | ---- | ---- |
 | [aws_dynamodb_table.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/dynamodb_table) | resource |
+| [aws_iam_policy.boundary](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_kms_alias.vault](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_alias) | resource |
 | [aws_kms_key.vault](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
 | [aws_sns_topic.backup](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
 | [aws_sns_topic_policy.backup](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_policy) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_iam_policy_document.boundary](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.role_kms](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.sns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.vault](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.vault_key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 

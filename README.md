@@ -113,13 +113,13 @@ Set `create_vault = false` and `existing_vault_name` to target a vault managed e
 
 ## Examples
 
-- [Simple](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/simple) - Vault, IAM role and a daily plan selecting resources by tag
-- [Complete](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/complete) - Customer managed KMS key, governance vault lock, cross-account copy policy, SNS notifications, air-gapped vault, multi-rule plan
+- [Basic](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/basic) - Vault, IAM role and a daily plan selecting resources by tag
+- [Complete](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/complete) - Customer managed KMS key, compliance vault lock, cross-account copy policy, SNS notifications, air-gapped vault, multi-rule plan
 - [Cross-region copy](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/cross-region-copy) - Secondary vault in another region fed by a copy action
-- [Plan](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/plan) - Plan submodule against an existing vault and role
+- [Plan](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/plan) - Plan submodule and root module plans against an existing vault and role
 - [Report](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/report) - Job report plans delivered to an S3 bucket
 - [Restore testing](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/restore-testing) - Weekly restore tests of the protected DynamoDB tables
-- [Framework](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/framework) - AWS Backup Audit Manager controls
+- [Framework](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/framework) - AWS Backup Audit Manager controls and their compliance report
 
 ## Module Wrappers
 
