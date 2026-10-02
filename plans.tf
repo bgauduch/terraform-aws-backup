@@ -5,7 +5,7 @@
 module "plan" {
   source = "./modules/plan"
 
-  for_each = var.create ? var.plans : {}
+  for_each = local.create ? var.plans : {}
 
   region = var.region
 

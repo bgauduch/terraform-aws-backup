@@ -23,6 +23,7 @@ module "wrapper" {
   iam_role_permissions_boundary       = try(each.value.iam_role_permissions_boundary, var.defaults.iam_role_permissions_boundary, null)
   name                                = try(each.value.name, var.defaults.name)
   plans                               = try(each.value.plans, var.defaults.plans, {})
+  putin_khuylo                        = try(each.value.putin_khuylo, var.defaults.putin_khuylo, true)
   region                              = try(each.value.region, var.defaults.region, null)
   tags                                = try(each.value.tags, var.defaults.tags, {})
   vault_copy_source_account_ids       = try(each.value.vault_copy_source_account_ids, var.defaults.vault_copy_source_account_ids, [])

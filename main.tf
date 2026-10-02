@@ -1,10 +1,10 @@
 data "aws_partition" "current" {}
 
 locals {
-  create_vault = var.create && var.create_vault
+  create       = var.create && var.putin_khuylo
+  create_vault = local.create && var.create_vault
 
-  vault_name = coalesce(var.vault_name, var.name)
-  # Plans and notifications target either the module vault or a caller-provided one
+  vault_name        = coalesce(var.vault_name, var.name)
   target_vault_name = local.create_vault ? aws_backup_vault.this[0].name : var.existing_vault_name
 
   create_vault_policy = local.create_vault && (var.attach_vault_policy || length(var.vault_copy_source_account_ids) > 0)
@@ -70,7 +70,7 @@ resource "aws_backup_vault_lock_configuration" "this" {
 }
 
 resource "aws_backup_vault_notifications" "this" {
-  count = var.create && var.vault_notifications_enabled && (var.create_vault || var.existing_vault_name != null) ? 1 : 0
+  count = local.create && var.vault_notifications_enabled && (var.create_vault || var.existing_vault_name != null) ? 1 : 0
 
   region = var.region
 
@@ -84,7 +84,7 @@ resource "aws_backup_vault_notifications" "this" {
 ################################################################################
 
 resource "aws_backup_logically_air_gapped_vault" "this" {
-  count = var.create && var.create_air_gapped_vault ? 1 : 0
+  count = local.create && var.create_air_gapped_vault ? 1 : 0
 
   region = var.region
 

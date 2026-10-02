@@ -1,5 +1,5 @@
 locals {
-  create_iam_role = var.create && var.create_iam_role
+  create_iam_role = local.create && var.create_iam_role
 
   iam_role_arn = local.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
 
