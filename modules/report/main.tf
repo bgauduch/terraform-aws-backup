@@ -30,4 +30,11 @@ resource "aws_backup_report_plan" "this" {
   }
 
   tags = var.tags
+
+  lifecycle {
+    precondition {
+      condition     = !contains(local.compliance_templates, each.value) || length(var.framework_arns) > 0
+      error_message = "`framework_arns` is required for the compliance report templates."
+    }
+  }
 }

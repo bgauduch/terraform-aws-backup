@@ -39,7 +39,7 @@ resource "aws_backup_restore_testing_selection" "this" {
   name                      = coalesce(each.value.name, replace(each.key, "-", "_"))
   restore_testing_plan_name = aws_backup_restore_testing_plan.this[0].name
   protected_resource_type   = each.value.protected_resource_type
-  iam_role_arn              = coalesce(each.value.iam_role_arn, var.iam_role_arn)
+  iam_role_arn              = each.value.iam_role_arn != null ? each.value.iam_role_arn : var.iam_role_arn
 
   protected_resource_arns    = each.value.protected_resource_arns
   restore_metadata_overrides = each.value.restore_metadata_overrides
@@ -66,6 +66,13 @@ resource "aws_backup_restore_testing_selection" "this" {
           value = string_not_equals.value.value
         }
       }
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition     = each.value.iam_role_arn != null || var.iam_role_arn != null
+      error_message = "`iam_role_arn` is required at module level or on each selection."
     }
   }
 }

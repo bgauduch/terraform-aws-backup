@@ -94,7 +94,7 @@ Any lock, governance mode included, rejects manual deletion of recovery points a
 
 ## IAM role
 
-The module creates an IAM role assumed by `backup.amazonaws.com` with the AWS managed backup and restore policies, including the S3 ones unless `iam_role_attach_s3_policies` is `false`. Extra managed policies go in `iam_role_additional_policy_arns` and an inline policy in `iam_role_additional_policy_json` with `create_iam_role_additional_policy`, for KMS permissions on the keys of the protected resources for example. Set `create_iam_role = false` and `iam_role_arn` to use an existing role; a plan can also override the role through `plans.<key>.iam_role_arn`.
+The module creates an IAM role assumed by `backup.amazonaws.com` with the AWS managed backup and restore policies, including the S3 ones unless `iam_role_attach_s3_policies` is `false`. Extra managed policies go in `iam_role_additional_policy_arns` and an inline policy in `iam_role_additional_policy_json` with `attach_iam_role_additional_policy`, for KMS permissions on the keys of the protected resources for example. Set `create_iam_role = false` and `iam_role_arn` to use an existing role; a plan can also override the role through `plans.<key>.iam_role_arn`.
 
 ## Plans and selections
 
@@ -165,19 +165,19 @@ For managing multiple similar resources, see [wrappers](https://github.com/terra
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
+| <a name="input_air_gapped_vault_enabled"></a> [air\_gapped\_vault\_enabled](#input\_air\_gapped\_vault\_enabled) | Determines whether a logically air-gapped vault is created | `bool` | `false` | no |
 | <a name="input_air_gapped_vault_kms_key_arn"></a> [air\_gapped\_vault\_kms\_key\_arn](#input\_air\_gapped\_vault\_kms\_key\_arn) | ARN of the KMS key used to encrypt the logically air-gapped vault. Defaults to the AWS managed key | `string` | `null` | no |
 | <a name="input_air_gapped_vault_max_retention_days"></a> [air\_gapped\_vault\_max\_retention\_days](#input\_air\_gapped\_vault\_max\_retention\_days) | The maximum retention period, in days, that the logically air-gapped vault retains its recovery points | `number` | `35` | no |
 | <a name="input_air_gapped_vault_min_retention_days"></a> [air\_gapped\_vault\_min\_retention\_days](#input\_air\_gapped\_vault\_min\_retention\_days) | The minimum retention period, in days, that the logically air-gapped vault retains its recovery points | `number` | `7` | no |
 | <a name="input_air_gapped_vault_name"></a> [air\_gapped\_vault\_name](#input\_air\_gapped\_vault\_name) | Name of the logically air-gapped vault. Defaults to `<name>-air-gapped` | `string` | `null` | no |
+| <a name="input_attach_iam_role_additional_policy"></a> [attach\_iam\_role\_additional\_policy](#input\_attach\_iam\_role\_additional\_policy) | Determines whether `iam_role_additional_policy_json` is attached inline to the IAM role | `bool` | `false` | no |
 | <a name="input_attach_vault_policy"></a> [attach\_vault\_policy](#input\_attach\_vault\_policy) | Determines whether `vault_policy` is attached to the backup vault. The statements generated from `vault_copy_source_account_ids` are attached regardless | `bool` | `false` | no |
 | <a name="input_create"></a> [create](#input\_create) | Determines whether resources will be created (affects all resources) | `bool` | `true` | no |
-| <a name="input_create_air_gapped_vault"></a> [create\_air\_gapped\_vault](#input\_create\_air\_gapped\_vault) | Determines whether a logically air-gapped vault is created | `bool` | `false` | no |
 | <a name="input_create_iam_role"></a> [create\_iam\_role](#input\_create\_iam\_role) | Determines whether the IAM role assumed by AWS Backup is created. Set to `false` to use `iam_role_arn` | `bool` | `true` | no |
-| <a name="input_create_iam_role_additional_policy"></a> [create\_iam\_role\_additional\_policy](#input\_create\_iam\_role\_additional\_policy) | Determines whether `iam_role_additional_policy_json` is attached inline to the IAM role | `bool` | `false` | no |
 | <a name="input_create_vault"></a> [create\_vault](#input\_create\_vault) | Determines whether a backup vault is created. Set to `false` to target an existing vault through `existing_vault_name` | `bool` | `true` | no |
 | <a name="input_existing_vault_name"></a> [existing\_vault\_name](#input\_existing\_vault\_name) | Name of an existing backup vault targeted by the plans and notifications when `create_vault` is `false` | `string` | `null` | no |
 | <a name="input_iam_role_additional_policy_arns"></a> [iam\_role\_additional\_policy\_arns](#input\_iam\_role\_additional\_policy\_arns) | List of additional IAM policy ARNs attached to the IAM role, for example `AWSBackupServiceRolePolicyForItemRestores` | `list(string)` | `[]` | no |
-| <a name="input_iam_role_additional_policy_json"></a> [iam\_role\_additional\_policy\_json](#input\_iam\_role\_additional\_policy\_json) | IAM policy document (JSON) attached inline to the IAM role when `create_iam_role_additional_policy` is `true`, for example KMS permissions on the keys of the protected resources | `string` | `null` | no |
+| <a name="input_iam_role_additional_policy_json"></a> [iam\_role\_additional\_policy\_json](#input\_iam\_role\_additional\_policy\_json) | IAM policy document (JSON) attached inline to the IAM role when `attach_iam_role_additional_policy` is `true`, for example KMS permissions on the keys of the protected resources | `string` | `null` | no |
 | <a name="input_iam_role_arn"></a> [iam\_role\_arn](#input\_iam\_role\_arn) | ARN of an existing IAM role assumed by AWS Backup for the selections when `create_iam_role` is `false`. Can be overridden per plan | `string` | `null` | no |
 | <a name="input_iam_role_attach_s3_policies"></a> [iam\_role\_attach\_s3\_policies](#input\_iam\_role\_attach\_s3\_policies) | Determines whether the AWS managed policies for S3 backup and restore are attached to the IAM role | `bool` | `true` | no |
 | <a name="input_iam_role_name"></a> [iam\_role\_name](#input\_iam\_role\_name) | Name of the IAM role. Defaults to `<name>-backup` | `string` | `null` | no |

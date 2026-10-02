@@ -56,9 +56,16 @@ resource "aws_iam_role_policy_attachment" "this" {
 }
 
 resource "aws_iam_role_policy" "additional" {
-  count = local.create_iam_role && var.create_iam_role_additional_policy ? 1 : 0
+  count = local.create_iam_role && var.attach_iam_role_additional_policy ? 1 : 0
 
   name   = "additional"
   role   = aws_iam_role.this[0].name
   policy = var.iam_role_additional_policy_json
+
+  lifecycle {
+    precondition {
+      condition     = var.iam_role_additional_policy_json != null
+      error_message = "`iam_role_additional_policy_json` is required when `attach_iam_role_additional_policy` is `true`."
+    }
+  }
 }

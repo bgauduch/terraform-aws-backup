@@ -29,11 +29,6 @@ variable "report_templates" {
     condition     = alltrue([for template in var.report_templates : contains(["BACKUP_JOB_REPORT", "COPY_JOB_REPORT", "RESTORE_JOB_REPORT", "RESOURCE_COMPLIANCE_REPORT", "CONTROL_COMPLIANCE_REPORT"], template)])
     error_message = "`report_templates` contains an unsupported template."
   }
-
-  validation {
-    condition     = length(setintersection(var.report_templates, ["RESOURCE_COMPLIANCE_REPORT", "CONTROL_COMPLIANCE_REPORT"])) == 0 || length(var.framework_arns) > 0
-    error_message = "`framework_arns` is required for the compliance report templates."
-  }
 }
 
 variable "descriptions" {
@@ -45,11 +40,6 @@ variable "descriptions" {
 variable "s3_bucket_name" {
   description = "Name of the S3 bucket that receives the reports. The bucket policy must allow `AWSServiceRoleForBackupReports` to put objects"
   type        = string
-
-  validation {
-    condition     = can(regex("^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$", var.s3_bucket_name))
-    error_message = "`s3_bucket_name` must be a valid S3 bucket name."
-  }
 }
 
 variable "s3_key_prefix" {

@@ -11,7 +11,7 @@ module "plan" {
 
   name                = coalesce(each.value.name, each.key)
   vault_name          = local.target_vault_name
-  iam_role_arn        = coalesce(each.value.iam_role_arn, local.iam_role_arn)
+  iam_role_arn        = each.value.iam_role_arn != null ? each.value.iam_role_arn : local.iam_role_arn
   windows_vss_enabled = each.value.windows_vss_enabled
   rules               = each.value.rules
   selections          = each.value.selections

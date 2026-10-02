@@ -41,13 +41,13 @@ module "backup" {
   vault_notifications_events        = ["BACKUP_JOB_FAILED", "COPY_JOB_FAILED", "RESTORE_JOB_FAILED", "RESTORE_JOB_COMPLETED"]
 
   # Logically air-gapped vault
-  create_air_gapped_vault             = true
+  air_gapped_vault_enabled            = true
   air_gapped_vault_min_retention_days = 7
   air_gapped_vault_max_retention_days = 90
 
   # IAM role
   iam_role_additional_policy_arns   = ["arn:${data.aws_partition.current.partition}:iam::aws:policy/AWSBackupServiceRolePolicyForItemRestores"]
-  create_iam_role_additional_policy = true
+  attach_iam_role_additional_policy = true
   iam_role_additional_policy_json   = data.aws_iam_policy_document.role_kms.json
 
   # Plans

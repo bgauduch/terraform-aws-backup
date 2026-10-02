@@ -3,15 +3,15 @@ module "wrapper" {
 
   for_each = var.items
 
+  air_gapped_vault_enabled            = try(each.value.air_gapped_vault_enabled, var.defaults.air_gapped_vault_enabled, false)
   air_gapped_vault_kms_key_arn        = try(each.value.air_gapped_vault_kms_key_arn, var.defaults.air_gapped_vault_kms_key_arn, null)
   air_gapped_vault_max_retention_days = try(each.value.air_gapped_vault_max_retention_days, var.defaults.air_gapped_vault_max_retention_days, 35)
   air_gapped_vault_min_retention_days = try(each.value.air_gapped_vault_min_retention_days, var.defaults.air_gapped_vault_min_retention_days, 7)
   air_gapped_vault_name               = try(each.value.air_gapped_vault_name, var.defaults.air_gapped_vault_name, null)
+  attach_iam_role_additional_policy   = try(each.value.attach_iam_role_additional_policy, var.defaults.attach_iam_role_additional_policy, false)
   attach_vault_policy                 = try(each.value.attach_vault_policy, var.defaults.attach_vault_policy, false)
   create                              = try(each.value.create, var.defaults.create, true)
-  create_air_gapped_vault             = try(each.value.create_air_gapped_vault, var.defaults.create_air_gapped_vault, false)
   create_iam_role                     = try(each.value.create_iam_role, var.defaults.create_iam_role, true)
-  create_iam_role_additional_policy   = try(each.value.create_iam_role_additional_policy, var.defaults.create_iam_role_additional_policy, false)
   create_vault                        = try(each.value.create_vault, var.defaults.create_vault, true)
   existing_vault_name                 = try(each.value.existing_vault_name, var.defaults.existing_vault_name, null)
   iam_role_additional_policy_arns     = try(each.value.iam_role_additional_policy_arns, var.defaults.iam_role_additional_policy_arns, [])

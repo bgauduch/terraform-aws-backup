@@ -23,16 +23,13 @@ variable "name" {
 variable "vault_name" {
   description = "Name of the backup vault targeted by the rules"
   type        = string
+  nullable    = false
 }
 
 variable "iam_role_arn" {
   description = "ARN of the IAM role assumed by AWS Backup for the selections"
   type        = string
-
-  validation {
-    condition     = can(regex("^arn:[a-z-]+:iam::[0-9]{12}:role/.+$", var.iam_role_arn))
-    error_message = "`iam_role_arn` must be an IAM role ARN."
-  }
+  nullable    = false
 }
 
 variable "windows_vss_enabled" {
