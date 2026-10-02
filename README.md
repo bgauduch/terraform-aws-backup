@@ -51,7 +51,6 @@ module "backup" {
 - Backup plans with multiple rules, lifecycle with cold storage and archive tiers, copy actions across regions and accounts, Windows VSS
 - Resource selections by ARN, by tag and by condition
 - Submodules for standalone plans, report plans, restore testing plans and Audit Manager frameworks
-- Native `terraform test` suite with mocked providers and an end-to-end backup and restore test with Terratest
 
 ## Conditional Creation
 
@@ -125,22 +124,6 @@ Set `create_vault = false` and `existing_vault_name` to target a vault managed e
 ## Module Wrappers
 
 For managing multiple similar resources, see [wrappers](https://github.com/bgauduch/terraform-aws-backup/tree/main/wrappers).
-
-## Tests
-
-Unit tests run against mocked providers and need no AWS credentials:
-
-```bash
-terraform init -backend=false
-terraform test -filter=tests/unit_root.tftest.hcl
-```
-
-Integration tests (`tests/integration_*.tftest.hcl`) and the Terratest suite in [`tests/e2e`](https://github.com/bgauduch/terraform-aws-backup/tree/main/tests/e2e) deploy the examples in a real account, run an on-demand backup and restore of a DynamoDB table, and destroy everything, recovery points included:
-
-```bash
-terraform test -filter=tests/integration_root.tftest.hcl
-cd tests/e2e && go test -v -timeout 120m ./...
-```
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
