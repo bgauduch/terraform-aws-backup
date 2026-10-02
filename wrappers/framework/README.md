@@ -12,9 +12,9 @@ This wrapper does not implement any extra functionality.
 
 ```hcl
 terraform {
-  source = "tfr:///terraform-aws-modules/backup-tam-review/aws//wrappers/framework"
+  source = "tfr:///terraform-aws-modules/backup/aws//wrappers/framework"
   # Alternative source:
-  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-backup-tam-review.git//wrappers/framework?ref=master"
+  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-backup.git//wrappers/framework?ref=master"
 }
 
 inputs = {
@@ -42,7 +42,7 @@ inputs = {
 
 ```hcl
 module "wrapper" {
-  source = "terraform-aws-modules/backup-tam-review/aws//wrappers/framework"
+  source = "terraform-aws-modules/backup/aws//wrappers/framework"
 
   defaults = { # Default values
     create = true
@@ -70,9 +70,9 @@ module "wrapper" {
 
 ```hcl
 terraform {
-  source = "tfr:///terraform-aws-modules/backup-tam-review/aws//wrappers/framework"
+  source = "tfr:///terraform-aws-modules/backup/aws//wrappers/framework"
   # Alternative source:
-  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-backup-tam-review.git//wrappers/framework?ref=master"
+  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-backup.git//wrappers/framework?ref=master"
 }
 
 inputs = {
