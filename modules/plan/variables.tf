@@ -23,16 +23,13 @@ variable "name" {
 variable "vault_name" {
   description = "Name of the backup vault targeted by the rules"
   type        = string
+  nullable    = false
 }
 
 variable "iam_role_arn" {
   description = "ARN of the IAM role assumed by AWS Backup for the selections"
   type        = string
-
-  validation {
-    condition     = can(regex("^arn:[a-z-]+:iam::[0-9]{12}:role/.+$", var.iam_role_arn))
-    error_message = "`iam_role_arn` must be an IAM role ARN."
-  }
+  nullable    = false
 }
 
 variable "windows_vss_enabled" {
@@ -41,8 +38,18 @@ variable "windows_vss_enabled" {
   default     = false
 }
 
+variable "scan_settings" {
+  description = "List of malware scan settings of the plan: `malware_scanner`, `resource_types`, `scanner_role_arn`"
+  type = list(object({
+    malware_scanner  = string
+    resource_types   = list(string)
+    scanner_role_arn = string
+  }))
+  default = []
+}
+
 variable "rules" {
-  description = "List of backup rules: `name`, `schedule` (cron), `schedule_expression_timezone`, `start_window`, `completion_window`, `enable_continuous_backup`, `recovery_point_tags`, `target_logically_air_gapped_backup_vault_arn`, `lifecycle` (`cold_storage_after`, `delete_after`, `opt_in_to_archive_for_supported_resources`), `copy_actions[]` (`destination_vault_arn`, `lifecycle`)"
+  description = "List of backup rules: `name`, `schedule` (cron), `schedule_expression_timezone`, `start_window`, `completion_window`, `enable_continuous_backup`, `recovery_point_tags`, `target_logically_air_gapped_backup_vault_arn`, `lifecycle` (`cold_storage_after`, `delete_after`, `opt_in_to_archive_for_supported_resources`), `copy_actions[]` (`destination_vault_arn`, `lifecycle`), `scan_actions[]` (`malware_scanner`, `scan_mode`)"
   type = list(object({
     name                                         = string
     schedule                                     = optional(string)
@@ -64,6 +71,10 @@ variable "rules" {
         delete_after                              = optional(number)
         opt_in_to_archive_for_supported_resources = optional(bool)
       }))
+    })), [])
+    scan_actions = optional(list(object({
+      malware_scanner = string
+      scan_mode       = string
     })), [])
   }))
 

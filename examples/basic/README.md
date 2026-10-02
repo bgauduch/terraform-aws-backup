@@ -1,4 +1,4 @@
-# Simple AWS Backup
+# Basic AWS Backup
 
 Configuration in this directory creates a backup vault encrypted with the AWS managed key, the IAM role assumed by AWS Backup and a daily backup plan selecting resources by tag.
 
@@ -20,7 +20,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.24 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.25 |
 
 ## Providers
 

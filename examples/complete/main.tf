@@ -13,7 +13,7 @@ locals {
   tags = {
     Name       = local.name
     Example    = local.name
-    Repository = "https://github.com/bgauduch/terraform-aws-backup"
+    Repository = "https://github.com/terraform-aws-modules/terraform-aws-backup"
   }
 }
 
@@ -30,10 +30,14 @@ module "backup" {
   vault_kms_key_arn             = aws_kms_key.vault.arn
   vault_copy_source_account_ids = [local.account_id]
   vault_force_destroy           = true # Recovery points are deleted with the vault, for the example teardown only
+  attach_vault_policy           = true
+  vault_policy                  = data.aws_iam_policy_document.vault.json
 
-  # Vault lock, governance mode: no lock date, no minimum retention so that recovery points stay deletable
-  vault_lock_enabled            = true
-  vault_lock_max_retention_days = 365
+  # Vault lock in compliance mode: after `vault_lock_changeable_for_days`, neither the lock nor the vault can be deleted
+  # Source: https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html (2026-10-03)
+  vault_lock_enabled             = true
+  vault_lock_max_retention_days  = 365
+  vault_lock_changeable_for_days = 365
 
   # Notifications
   vault_notifications_enabled       = true
@@ -41,18 +45,21 @@ module "backup" {
   vault_notifications_events        = ["BACKUP_JOB_FAILED", "COPY_JOB_FAILED", "RESTORE_JOB_FAILED", "RESTORE_JOB_COMPLETED"]
 
   # Logically air-gapped vault
-  create_air_gapped_vault             = true
+  air_gapped_vault_enabled            = true
   air_gapped_vault_min_retention_days = 7
   air_gapped_vault_max_retention_days = 90
 
   # IAM role
+  iam_role_permissions_boundary = aws_iam_policy.boundary.arn
+  # Source: https://docs.aws.amazon.com/aws-backup/latest/devguide/security-iam-awsmanpol.html (2026-10-03)
   iam_role_additional_policy_arns   = ["arn:${data.aws_partition.current.partition}:iam::aws:policy/AWSBackupServiceRolePolicyForItemRestores"]
-  create_iam_role_additional_policy = true
+  attach_iam_role_additional_policy = true
   iam_role_additional_policy_json   = data.aws_iam_policy_document.role_kms.json
 
   # Plans
   plans = {
     daily = {
+      windows_vss_enabled = true
       rules = [
         {
           name                         = "daily"
@@ -74,16 +81,33 @@ module "backup" {
             opt_in_to_archive_for_supported_resources = true
           }
         },
+        {
+          name                                         = "air-gapped"
+          schedule                                     = "cron(0 6 ? * SUN *)"
+          target_logically_air_gapped_backup_vault_arn = module.backup.air_gapped_vault_arn
+          lifecycle = {
+            delete_after = 35
+          }
+        },
+        {
+          name                     = "continuous"
+          enable_continuous_backup = true
+          lifecycle = {
+            delete_after = 35
+          }
+        },
       ]
       selections = {
         by-tag = {
           resources      = ["*"]
+          not_resources  = ["arn:${data.aws_partition.current.partition}:ec2:*:*:volume/*"]
           selection_tags = [{ type = "STRINGEQUALS", key = "backup", value = local.name }]
         }
         by-arn = {
           resources = [aws_dynamodb_table.this.arn]
           conditions = {
             string_not_equals = [{ key = "aws:ResourceTag/backup", value = "false" }]
+            string_like       = [{ key = "aws:ResourceTag/Example", value = "backup-ex-*" }]
           }
         }
       }
@@ -91,6 +115,13 @@ module "backup" {
   }
 
   tags = local.tags
+}
+
+module "disabled" {
+  source = "../.."
+
+  create = false
+  name   = "${local.name}-disabled"
 }
 
 ################################################################################
@@ -115,6 +146,7 @@ resource "aws_dynamodb_table" "this" {
 }
 
 # KMS key of the vault: the module role encrypts and decrypts recovery points through AWS Backup grants
+# Source: https://docs.aws.amazon.com/aws-backup/latest/devguide/encryption.html (2026-10-03)
 data "aws_iam_policy_document" "vault_key" {
   statement {
     sid       = "AccountAdministration"
@@ -146,6 +178,7 @@ data "aws_iam_policy_document" "vault_key" {
     }
 
     # The role ARN is matched by condition so that the key policy stays valid when the role is recreated
+    # Source: https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html (2026-10-03)
     condition {
       test     = "ArnEquals"
       variable = "aws:PrincipalArn"
@@ -223,6 +256,7 @@ data "aws_iam_policy_document" "sns" {
     actions   = ["sns:Publish"]
     resources = [aws_sns_topic.backup.arn]
 
+    # Source: https://docs.aws.amazon.com/aws-backup/latest/devguide/backup-notifications.html (2026-10-03)
     principals {
       type        = "Service"
       identifiers = ["backup.amazonaws.com"]
@@ -233,4 +267,34 @@ data "aws_iam_policy_document" "sns" {
 resource "aws_sns_topic_policy" "backup" {
   arn    = aws_sns_topic.backup.arn
   policy = data.aws_iam_policy_document.sns.json
+}
+
+data "aws_iam_policy_document" "vault" {
+  statement {
+    sid       = "AccountDescribe"
+    effect    = "Allow"
+    actions   = ["backup:DescribeBackupVault"]
+    resources = ["*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:${data.aws_partition.current.partition}:iam::${local.account_id}:root"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "boundary" {
+  statement {
+    sid       = "AllowAll"
+    effect    = "Allow"
+    actions   = ["*"]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "boundary" {
+  name   = "${local.name}-boundary"
+  policy = data.aws_iam_policy_document.boundary.json
+
+  tags = local.tags
 }

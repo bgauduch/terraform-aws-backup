@@ -42,6 +42,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "config" {
   }
 }
 
+# Source: https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-policy.html (2026-10-03)
 data "aws_iam_policy_document" "config_bucket" {
   count = local.create_config ? 1 : 0
 
@@ -85,6 +86,7 @@ resource "aws_s3_bucket_policy" "config" {
   depends_on = [aws_s3_bucket_public_access_block.config]
 }
 
+# Source: https://docs.aws.amazon.com/config/latest/developerguide/iamrole-permissions.html (2026-10-03)
 data "aws_iam_policy_document" "config_assume_role" {
   count = local.create_config ? 1 : 0
 
@@ -111,7 +113,8 @@ resource "aws_iam_role" "config" {
 resource "aws_iam_role_policy_attachment" "config" {
   count = local.create_config ? 1 : 0
 
-  role       = aws_iam_role.config[0].name
+  role = aws_iam_role.config[0].name
+  # Source: https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AWS_ConfigRole.html (2026-10-03)
   policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWS_ConfigRole"
 }
 

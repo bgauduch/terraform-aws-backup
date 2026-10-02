@@ -90,11 +90,6 @@ variable "iam_role_arn" {
   description = "ARN of the IAM role assumed by AWS Backup for the restore tests. It must carry the restore permissions of the protected resource types. Can be overridden per selection"
   type        = string
   default     = null
-
-  validation {
-    condition     = var.iam_role_arn == null || can(regex("^arn:[a-z-]+:iam::[0-9]{12}:role/.+$", var.iam_role_arn))
-    error_message = "`iam_role_arn` must be an IAM role ARN."
-  }
 }
 
 variable "selections" {
@@ -121,11 +116,6 @@ variable "selections" {
   validation {
     condition     = alltrue([for selection in var.selections : selection.validation_window_hours == null || try(selection.validation_window_hours >= 1 && selection.validation_window_hours <= 168, false)])
     error_message = "`validation_window_hours` must be between 1 and 168."
-  }
-
-  validation {
-    condition     = var.iam_role_arn != null || alltrue([for selection in var.selections : selection.iam_role_arn != null])
-    error_message = "`iam_role_arn` is required at module level or on each selection."
   }
 }
 

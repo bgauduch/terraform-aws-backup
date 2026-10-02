@@ -1,6 +1,6 @@
 # Plan Example
 
-Configuration in this directory creates a backup plan with the plan submodule against a vault and an IAM role managed outside the root module. Two rules, hourly and weekly with cold storage, protect a DynamoDB table selected by ARN and by tag.
+Configuration in this directory creates a backup plan with the plan submodule against a vault and an IAM role managed outside the root module. Two rules, hourly and weekly with cold storage, protect a DynamoDB table selected by ARN and by tag. The root module adds a weekly plan against the same vault and role, with `create_vault = false` and `create_iam_role = false`.
 
 ## Usage
 
@@ -19,19 +19,20 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.24 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.25 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.24 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.25 |
 
 ## Modules
 
 | Name | Source | Version |
 | ---- | ------ | ------- |
+| <a name="module_backup"></a> [backup](#module\_backup) | ../.. | n/a |
 | <a name="module_plan"></a> [plan](#module\_plan) | ../../modules/plan | n/a |
 
 ## Resources
@@ -43,6 +44,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | [aws_iam_role.existing](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy_attachment.existing](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_policy_document.assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 
 ## Inputs
 

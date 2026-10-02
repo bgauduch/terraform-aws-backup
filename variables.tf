@@ -26,6 +26,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "putin_khuylo" {
+  description = "Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo!"
+  type        = bool
+  default     = true
+}
+
 ################################################################################
 # Vault
 ################################################################################
@@ -40,11 +46,6 @@ variable "existing_vault_name" {
   description = "Name of an existing backup vault targeted by the plans and notifications when `create_vault` is `false`"
   type        = string
   default     = null
-
-  validation {
-    condition     = var.create_vault || var.existing_vault_name != null
-    error_message = "`existing_vault_name` is required when `create_vault` is `false`."
-  }
 }
 
 variable "vault_name" {
@@ -62,11 +63,6 @@ variable "vault_kms_key_arn" {
   description = "ARN of the KMS key used to encrypt the backup vault. Defaults to the AWS managed key `aws/backup`. The key policy must allow AWS Backup to use the key"
   type        = string
   default     = null
-
-  validation {
-    condition     = var.vault_kms_key_arn == null || can(regex("^arn:[a-z-]+:kms:[a-z0-9-]+:[0-9]{12}:(key|alias)/.+$", var.vault_kms_key_arn))
-    error_message = "`vault_kms_key_arn` must be a KMS key or alias ARN."
-  }
 }
 
 variable "vault_force_destroy" {
@@ -133,11 +129,6 @@ variable "vault_lock_max_retention_days" {
     condition     = var.vault_lock_max_retention_days == null || try(var.vault_lock_max_retention_days >= 1 && var.vault_lock_max_retention_days <= 36500, false)
     error_message = "`vault_lock_max_retention_days` must be between 1 and 36500."
   }
-
-  validation {
-    condition     = var.vault_lock_max_retention_days == null || var.vault_lock_min_retention_days == null || try(var.vault_lock_max_retention_days >= var.vault_lock_min_retention_days, false)
-    error_message = "`vault_lock_max_retention_days` must be greater than or equal to `vault_lock_min_retention_days`."
-  }
 }
 
 variable "vault_lock_changeable_for_days" {
@@ -165,16 +156,6 @@ variable "vault_notifications_sns_topic_arn" {
   description = "ARN of the SNS topic that receives the backup vault events when `vault_notifications_enabled` is `true`. The topic policy must allow `backup.amazonaws.com` to publish"
   type        = string
   default     = null
-
-  validation {
-    condition     = !var.vault_notifications_enabled || var.vault_notifications_sns_topic_arn != null
-    error_message = "`vault_notifications_sns_topic_arn` is required when `vault_notifications_enabled` is `true`."
-  }
-
-  validation {
-    condition     = var.vault_notifications_sns_topic_arn == null || can(regex("^arn:[a-z-]+:sns:[a-z0-9-]+:[0-9]{12}:.+$", var.vault_notifications_sns_topic_arn))
-    error_message = "`vault_notifications_sns_topic_arn` must be an SNS topic ARN."
-  }
 }
 
 variable "vault_notifications_events" {
@@ -197,7 +178,7 @@ variable "vault_notifications_events" {
 # Logically air-gapped vault
 ################################################################################
 
-variable "create_air_gapped_vault" {
+variable "air_gapped_vault_enabled" {
   description = "Determines whether a logically air-gapped vault is created"
   type        = bool
   default     = false
@@ -231,8 +212,8 @@ variable "air_gapped_vault_max_retention_days" {
   default     = 35
 
   validation {
-    condition     = var.air_gapped_vault_max_retention_days >= var.air_gapped_vault_min_retention_days && var.air_gapped_vault_max_retention_days <= 36500
-    error_message = "`air_gapped_vault_max_retention_days` must be between `air_gapped_vault_min_retention_days` and 36500."
+    condition     = var.air_gapped_vault_max_retention_days >= 7 && var.air_gapped_vault_max_retention_days <= 36500
+    error_message = "`air_gapped_vault_max_retention_days` must be between 7 and 36500."
   }
 }
 
@@ -256,16 +237,6 @@ variable "iam_role_arn" {
   description = "ARN of an existing IAM role assumed by AWS Backup for the selections when `create_iam_role` is `false`. Can be overridden per plan"
   type        = string
   default     = null
-
-  validation {
-    condition     = var.create_iam_role || var.iam_role_arn != null
-    error_message = "`iam_role_arn` is required when `create_iam_role` is `false`."
-  }
-
-  validation {
-    condition     = var.iam_role_arn == null || can(regex("^arn:[a-z-]+:iam::[0-9]{12}:role/.+$", var.iam_role_arn))
-    error_message = "`iam_role_arn` must be an IAM role ARN."
-  }
 }
 
 variable "iam_role_name" {
@@ -284,11 +255,18 @@ variable "iam_role_permissions_boundary" {
   description = "ARN of the policy used as the permissions boundary of the IAM role"
   type        = string
   default     = null
+}
 
-  validation {
-    condition     = var.iam_role_permissions_boundary == null || can(regex("^arn:[a-z-]+:iam::[0-9]{12}:policy/.+$", var.iam_role_permissions_boundary))
-    error_message = "`iam_role_permissions_boundary` must be an IAM policy ARN."
-  }
+variable "iam_role_max_session_duration" {
+  description = "Maximum session duration, in seconds, of the IAM role"
+  type        = number
+  default     = null
+}
+
+variable "iam_role_force_detach_policies" {
+  description = "Determines whether policies attached to the IAM role are detached before the role is destroyed"
+  type        = bool
+  default     = true
 }
 
 variable "iam_role_attach_s3_policies" {
@@ -303,21 +281,22 @@ variable "iam_role_additional_policy_arns" {
   default     = []
 }
 
-variable "create_iam_role_additional_policy" {
+variable "attach_iam_role_additional_policy" {
   description = "Determines whether `iam_role_additional_policy_json` is attached inline to the IAM role"
   type        = bool
   default     = false
 }
 
+variable "iam_role_additional_policy_name" {
+  description = "Name of the inline policy attached to the IAM role when `attach_iam_role_additional_policy` is `true`"
+  type        = string
+  default     = "additional"
+}
+
 variable "iam_role_additional_policy_json" {
-  description = "IAM policy document (JSON) attached inline to the IAM role when `create_iam_role_additional_policy` is `true`, for example KMS permissions on the keys of the protected resources"
+  description = "IAM policy document (JSON) attached inline to the IAM role when `attach_iam_role_additional_policy` is `true`, for example KMS permissions on the keys of the protected resources"
   type        = string
   default     = null
-
-  validation {
-    condition     = !var.create_iam_role_additional_policy || var.iam_role_additional_policy_json != null
-    error_message = "`iam_role_additional_policy_json` is required when `create_iam_role_additional_policy` is `true`."
-  }
 
   validation {
     condition     = var.iam_role_additional_policy_json == null || can(jsondecode(var.iam_role_additional_policy_json))
@@ -335,13 +314,19 @@ variable "plans" {
   - `name`: plan name, defaults to the map key
   - `windows_vss_enabled`: enable Windows VSS backup for EC2 instances
   - `iam_role_arn`: IAM role assumed by AWS Backup for the selections of this plan, defaults to the module role
-  - `rules[]`: `name`, `schedule` (cron), `schedule_expression_timezone`, `start_window`, `completion_window`, `enable_continuous_backup`, `recovery_point_tags`, `target_logically_air_gapped_backup_vault_arn`, `lifecycle` (`cold_storage_after`, `delete_after`, `opt_in_to_archive_for_supported_resources`), `copy_actions[]` (`destination_vault_arn`, `lifecycle`)
+  - `scan_settings[]`: `malware_scanner`, `resource_types`, `scanner_role_arn`
+  - `rules[]`: `name`, `schedule` (cron), `schedule_expression_timezone`, `start_window`, `completion_window`, `enable_continuous_backup`, `recovery_point_tags`, `target_logically_air_gapped_backup_vault_arn`, `lifecycle` (`cold_storage_after`, `delete_after`, `opt_in_to_archive_for_supported_resources`), `copy_actions[]` (`destination_vault_arn`, `lifecycle`), `scan_actions[]` (`malware_scanner`, `scan_mode`)
   - `selections{}`: keyed by selection name: `name`, `resources`, `not_resources`, `selection_tags[]` (`type`, `key`, `value`), `conditions` (`string_equals[]`, `string_like[]`, `string_not_equals[]`, `string_not_like[]` of `key`/`value`)
   EOT
   type = map(object({
     name                = optional(string)
     windows_vss_enabled = optional(bool, false)
     iam_role_arn        = optional(string)
+    scan_settings = optional(list(object({
+      malware_scanner  = string
+      resource_types   = list(string)
+      scanner_role_arn = string
+    })), [])
     rules = list(object({
       name                                         = string
       schedule                                     = optional(string)
@@ -363,6 +348,10 @@ variable "plans" {
           delete_after                              = optional(number)
           opt_in_to_archive_for_supported_resources = optional(bool)
         }))
+      })), [])
+      scan_actions = optional(list(object({
+        malware_scanner = string
+        scan_mode       = string
       })), [])
     }))
     selections = optional(map(object({
@@ -416,10 +405,5 @@ variable "plans" {
       ]
     ]))
     error_message = "`copy_actions[].lifecycle.delete_after` must be at least 90 days greater than `cold_storage_after`."
-  }
-
-  validation {
-    condition     = alltrue([for plan in var.plans : plan.iam_role_arn == null || can(regex("^arn:[a-z-]+:iam::[0-9]{12}:role/.+$", plan.iam_role_arn))])
-    error_message = "`plans[].iam_role_arn` must be an IAM role ARN."
   }
 }

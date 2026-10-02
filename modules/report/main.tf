@@ -17,7 +17,7 @@ resource "aws_backup_report_plan" "this" {
   report_delivery_channel {
     formats        = var.formats
     s3_bucket_name = var.s3_bucket_name
-    s3_key_prefix  = var.s3_key_prefix # gitleaks:allow
+    s3_key_prefix  = var.s3_key_prefix
   }
 
   report_setting {
@@ -30,4 +30,11 @@ resource "aws_backup_report_plan" "this" {
   }
 
   tags = var.tags
+
+  lifecycle {
+    precondition {
+      condition     = !contains(local.compliance_templates, each.value) || length(var.framework_arns) > 0
+      error_message = "`framework_arns` is required for the compliance report templates."
+    }
+  }
 }

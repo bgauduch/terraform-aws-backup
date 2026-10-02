@@ -1,8 +1,9 @@
 locals {
-  create_iam_role = var.create && var.create_iam_role
+  create_iam_role = local.create && var.create_iam_role
 
   iam_role_arn = local.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
 
+  # Source: https://docs.aws.amazon.com/aws-backup/latest/devguide/security-iam-awsmanpol.html (2026-10-03)
   iam_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
   iam_role_policy_arns = toset(concat(
     [
@@ -29,6 +30,7 @@ data "aws_iam_policy_document" "assume_role" {
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
+    # Source: https://docs.aws.amazon.com/aws-backup/latest/devguide/iam-service-roles.html (2026-10-03)
     principals {
       type        = "Service"
       identifiers = ["backup.amazonaws.com"]
@@ -45,6 +47,9 @@ resource "aws_iam_role" "this" {
   assume_role_policy   = data.aws_iam_policy_document.assume_role[0].json
   permissions_boundary = var.iam_role_permissions_boundary
 
+  max_session_duration  = var.iam_role_max_session_duration
+  force_detach_policies = var.iam_role_force_detach_policies
+
   tags = var.tags
 }
 
@@ -56,9 +61,16 @@ resource "aws_iam_role_policy_attachment" "this" {
 }
 
 resource "aws_iam_role_policy" "additional" {
-  count = local.create_iam_role && var.create_iam_role_additional_policy ? 1 : 0
+  count = local.create_iam_role && var.attach_iam_role_additional_policy ? 1 : 0
 
-  name   = "additional"
+  name   = var.iam_role_additional_policy_name
   role   = aws_iam_role.this[0].name
   policy = var.iam_role_additional_policy_json
+
+  lifecycle {
+    precondition {
+      condition     = var.iam_role_additional_policy_json != null
+      error_message = "`iam_role_additional_policy_json` is required when `attach_iam_role_additional_policy` is `true`."
+    }
+  }
 }

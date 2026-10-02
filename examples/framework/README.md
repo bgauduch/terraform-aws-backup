@@ -1,6 +1,6 @@
 # Audit Manager framework
 
-Configuration in this directory creates a backup vault and plan protecting a DynamoDB table, and an AWS Backup Audit Manager framework evaluating five controls against them.
+Configuration in this directory creates a backup vault and plan protecting a DynamoDB table, and an AWS Backup Audit Manager framework evaluating five controls against them, with a control compliance report plan delivered to an S3 bucket.
 
 AWS Backup Audit Manager requires an active AWS Config recorder in the region. Set `enable_config_recorder = true` when the region has no recorder: the example then creates one, limited to the resource types the controls evaluate, together with its delivery bucket and role.
 
@@ -22,13 +22,13 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.24 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.25 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.24 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.25 |
 
 ## Modules
 
@@ -36,6 +36,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | ---- | ------ | ------- |
 | <a name="module_backup"></a> [backup](#module\_backup) | ../.. | n/a |
 | <a name="module_framework"></a> [framework](#module\_framework) | ../../modules/framework | n/a |
+| <a name="module_report"></a> [report](#module\_report) | ../../modules/report | n/a |
 
 ## Resources
 
@@ -48,12 +49,19 @@ Note that this example may create resources which cost money. Run `terraform des
 | [aws_iam_role.config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy_attachment.config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_s3_bucket.config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
+| [aws_s3_bucket.reports](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
+| [aws_s3_bucket_ownership_controls.reports](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_ownership_controls) | resource |
 | [aws_s3_bucket_policy.config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
+| [aws_s3_bucket_policy.reports](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
 | [aws_s3_bucket_public_access_block.config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
+| [aws_s3_bucket_public_access_block.reports](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
 | [aws_s3_bucket_server_side_encryption_configuration.config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
+| [aws_s3_bucket_server_side_encryption_configuration.reports](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
+| [aws_s3_bucket_versioning.reports](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.config_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.config_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.reports](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 
 ## Inputs

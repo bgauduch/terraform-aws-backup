@@ -1,24 +1,5 @@
-provider "aws" {
-  region = local.region
-}
-
-data "aws_caller_identity" "current" {}
-data "aws_partition" "current" {}
-
-locals {
-  region     = "eu-west-1"
-  name       = "backup-ex-${basename(path.cwd)}"
-  account_id = data.aws_caller_identity.current.account_id
-
-  tags = {
-    Name       = local.name
-    Example    = local.name
-    Repository = "https://github.com/terraform-aws-modules/terraform-aws-backup"
-  }
-}
-
 ################################################################################
-# Report Module
+# Report Module, compliance report of the framework
 ################################################################################
 
 module "report" {
@@ -26,13 +7,9 @@ module "report" {
 
   name           = local.name
   s3_bucket_name = aws_s3_bucket.reports.id
-  s3_key_prefix  = "backup"
 
-  report_templates = ["BACKUP_JOB_REPORT", "COPY_JOB_REPORT", "RESTORE_JOB_REPORT"]
-  formats          = ["CSV", "JSON"]
-  descriptions = {
-    BACKUP_JOB_REPORT = "Daily backup jobs"
-  }
+  report_templates = ["CONTROL_COMPLIANCE_REPORT"]
+  framework_arns   = [module.framework.arn]
 
   tags = local.tags
 
@@ -44,7 +21,7 @@ module "report" {
 ################################################################################
 
 resource "aws_s3_bucket" "reports" {
-  bucket        = "${local.name}-${local.account_id}"
+  bucket        = "${local.name}-reports-${data.aws_caller_identity.current.account_id}"
   force_destroy = true # Reports are deleted with the bucket, for the example teardown only
 
   tags = local.tags
@@ -96,13 +73,13 @@ data "aws_iam_policy_document" "reports" {
 
     principals {
       type        = "AWS"
-      identifiers = ["arn:${data.aws_partition.current.partition}:iam::${local.account_id}:root"]
+      identifiers = ["arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root"]
     }
 
     condition {
       test     = "ArnLike"
       variable = "aws:PrincipalArn"
-      values   = ["arn:${data.aws_partition.current.partition}:iam::${local.account_id}:role/aws-service-role/reports.backup.amazonaws.com/AWSServiceRoleForBackupReports"]
+      values   = ["arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/reports.backup.amazonaws.com/AWSServiceRoleForBackupReports"]
     }
   }
 

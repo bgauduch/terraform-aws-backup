@@ -4,13 +4,13 @@ provider "aws" {
 
 locals {
   region           = "eu-west-1"
-  region_secondary = "eu-west-3"
+  region_secondary = "us-east-1"
   name             = "backup-ex-${basename(path.cwd)}"
 
   tags = {
     Name       = local.name
     Example    = local.name
-    Repository = "https://github.com/bgauduch/terraform-aws-backup"
+    Repository = "https://github.com/terraform-aws-modules/terraform-aws-backup"
   }
 }
 

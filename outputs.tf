@@ -55,6 +55,11 @@ output "iam_role_name" {
   value       = try(aws_iam_role.this[0].name, null)
 }
 
+output "iam_role_unique_id" {
+  description = "Stable and unique string identifying the IAM role created by the module"
+  value       = try(aws_iam_role.this[0].unique_id, null)
+}
+
 ################################################################################
 # Plans
 ################################################################################

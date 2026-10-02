@@ -6,7 +6,7 @@ Terraform submodule which creates a restore testing plan and one selection per p
 
 ```hcl
 module "restore_testing" {
-  source = "bgauduch/backup/aws//modules/restore-testing"
+  source = "terraform-aws-modules/backup/aws//modules/restore-testing"
 
   name                = "application"
   schedule_expression = "cron(0 8 ? * MON *)"

@@ -50,6 +50,15 @@ resource "aws_backup_plan" "this" {
           }
         }
       }
+
+      dynamic "scan_action" {
+        for_each = rule.value.scan_actions
+
+        content {
+          malware_scanner = scan_action.value.malware_scanner
+          scan_mode       = scan_action.value.scan_mode
+        }
+      }
     }
   }
 
@@ -61,6 +70,16 @@ resource "aws_backup_plan" "this" {
         WindowsVSS = "enabled"
       }
       resource_type = "EC2"
+    }
+  }
+
+  dynamic "scan_setting" {
+    for_each = var.scan_settings
+
+    content {
+      malware_scanner  = scan_setting.value.malware_scanner
+      resource_types   = scan_setting.value.resource_types
+      scanner_role_arn = scan_setting.value.scanner_role_arn
     }
   }
 

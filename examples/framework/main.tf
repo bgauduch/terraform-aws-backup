@@ -9,7 +9,7 @@ locals {
   tags = {
     Name       = local.name
     Example    = local.name
-    Repository = "https://github.com/bgauduch/terraform-aws-backup"
+    Repository = "https://github.com/terraform-aws-modules/terraform-aws-backup"
   }
 }
 
@@ -73,7 +73,6 @@ module "framework" {
     }
   }
 
-  # The underlying AWS Config rules are deployed asynchronously
   timeouts = {
     create = "20m"
     delete = "20m"
@@ -82,6 +81,7 @@ module "framework" {
   tags = local.tags
 
   # AWS Backup Audit Manager requires an active AWS Config recorder in the region
+  # Source: https://docs.aws.amazon.com/aws-backup/latest/devguide/aws-backup-audit-manager.html (2026-10-03)
   depends_on = [aws_config_configuration_recorder_status.this]
 }
 

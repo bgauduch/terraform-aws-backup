@@ -4,13 +4,13 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 6.24"
+      version = ">= 6.25"
     }
   }
 
   provider_meta "aws" {
     user_agent = [
-      "github.com/bgauduch/terraform-aws-backup"
+      "github.com/terraform-aws-modules/terraform-aws-backup"
     ]
   }
 }

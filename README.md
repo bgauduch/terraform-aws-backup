@@ -6,7 +6,7 @@ Terraform module which creates AWS Backup resources on AWS: vault, vault lock, v
 
 ```hcl
 module "backup" {
-  source = "bgauduch/backup/aws"
+  source = "terraform-aws-modules/backup/aws"
 
   name = "application"
 
@@ -51,7 +51,6 @@ module "backup" {
 - Backup plans with multiple rules, lifecycle with cold storage and archive tiers, copy actions across regions and accounts, Windows VSS
 - Resource selections by ARN, by tag and by condition
 - Submodules for standalone plans, report plans, restore testing plans and Audit Manager frameworks
-- Native `terraform test` suite with mocked providers and an end-to-end backup and restore test with Terratest
 
 ## Conditional Creation
 
@@ -59,7 +58,7 @@ The module supports conditional resource creation:
 
 ```hcl
 module "backup" {
-  source = "bgauduch/backup/aws"
+  source = "terraform-aws-modules/backup/aws"
 
   create = false
 }
@@ -67,7 +66,7 @@ module "backup" {
 
 ## Vault encryption
 
-The vault is encrypted with the AWS managed key `aws/backup` unless `vault_kms_key_arn` is set. The module never creates a KMS key: the key policy of a customer managed key must allow the IAM role assumed by AWS Backup to use the key and to create grants for AWS resources. See the [complete example](https://github.com/bgauduch/terraform-aws-backup/tree/main/examples/complete) for a working key policy.
+The vault is encrypted with the AWS managed key `aws/backup` unless `vault_kms_key_arn` is set. The module never creates a KMS key: the key policy of a customer managed key must allow the IAM role assumed by AWS Backup to use the key and to create grants for AWS resources. See the [complete example](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/complete) for a working key policy.
 
 ## Vault policy and cross-account copy
 
@@ -75,7 +74,7 @@ The vault is encrypted with the AWS managed key `aws/backup` unless `vault_kms_k
 
 ```hcl
 module "backup" {
-  source = "bgauduch/backup/aws"
+  source = "terraform-aws-modules/backup/aws"
 
   name = "central"
 
@@ -95,11 +94,11 @@ Any lock, governance mode included, rejects manual deletion of recovery points a
 
 ## IAM role
 
-The module creates an IAM role assumed by `backup.amazonaws.com` with the AWS managed backup and restore policies, including the S3 ones unless `iam_role_attach_s3_policies` is `false`. Extra managed policies go in `iam_role_additional_policy_arns` and an inline policy in `iam_role_additional_policy_json` with `create_iam_role_additional_policy`, for KMS permissions on the keys of the protected resources for example. Set `create_iam_role = false` and `iam_role_arn` to use an existing role; a plan can also override the role through `plans.<key>.iam_role_arn`.
+The module creates an IAM role assumed by `backup.amazonaws.com` with the AWS managed backup and restore policies, including the S3 ones unless `iam_role_attach_s3_policies` is `false`. Extra managed policies go in `iam_role_additional_policy_arns` and an inline policy in `iam_role_additional_policy_json` with `attach_iam_role_additional_policy`, for KMS permissions on the keys of the protected resources for example. Set `create_iam_role = false` and `iam_role_arn` to use an existing role; a plan can also override the role through `plans.<key>.iam_role_arn`.
 
 ## Plans and selections
 
-`plans` is a map of backup plans. Each plan holds a list of `rules`, with a schedule, windows, lifecycle and copy actions, and a map of `selections` assigning resources by ARN, by tag or by condition. Plans and selections are created through the [plan sub-module](https://github.com/bgauduch/terraform-aws-backup/tree/main/modules/plan), which can be used on its own against an existing vault.
+`plans` is a map of backup plans. Each plan holds a list of `rules`, with a schedule, windows, lifecycle and copy actions, and a map of `selections` assigning resources by ARN, by tag or by condition. Plans and selections are created through the [plan sub-module](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/modules/plan), which can be used on its own against an existing vault.
 
 ## Existing vault
 
@@ -107,40 +106,24 @@ Set `create_vault = false` and `existing_vault_name` to target a vault managed e
 
 ## Submodules
 
-- [plan](https://github.com/bgauduch/terraform-aws-backup/tree/main/modules/plan) - Manages one backup plan with its rules and resource selections against an existing vault
-- [report](https://github.com/bgauduch/terraform-aws-backup/tree/main/modules/report) - Manages report plans delivered to an existing S3 bucket
-- [restore-testing](https://github.com/bgauduch/terraform-aws-backup/tree/main/modules/restore-testing) - Manages a restore testing plan and its selections
-- [framework](https://github.com/bgauduch/terraform-aws-backup/tree/main/modules/framework) - Manages an AWS Backup Audit Manager framework and its controls
+- [plan](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/modules/plan) - Manages one backup plan with its rules and resource selections against an existing vault
+- [report](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/modules/report) - Manages report plans delivered to an existing S3 bucket
+- [restore-testing](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/modules/restore-testing) - Manages a restore testing plan and its selections
+- [framework](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/modules/framework) - Manages an AWS Backup Audit Manager framework and its controls
 
 ## Examples
 
-- [Simple](https://github.com/bgauduch/terraform-aws-backup/tree/main/examples/simple) - Vault, IAM role and a daily plan selecting resources by tag
-- [Complete](https://github.com/bgauduch/terraform-aws-backup/tree/main/examples/complete) - Customer managed KMS key, governance vault lock, cross-account copy policy, SNS notifications, air-gapped vault, multi-rule plan
-- [Cross-region copy](https://github.com/bgauduch/terraform-aws-backup/tree/main/examples/cross-region-copy) - Secondary vault in another region fed by a copy action
-- [Plan](https://github.com/bgauduch/terraform-aws-backup/tree/main/examples/plan) - Plan submodule against an existing vault and role
-- [Report](https://github.com/bgauduch/terraform-aws-backup/tree/main/examples/report) - Job report plans delivered to an S3 bucket
-- [Restore testing](https://github.com/bgauduch/terraform-aws-backup/tree/main/examples/restore-testing) - Weekly restore tests of the protected DynamoDB tables
-- [Framework](https://github.com/bgauduch/terraform-aws-backup/tree/main/examples/framework) - AWS Backup Audit Manager controls
+- [Basic](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/basic) - Vault, IAM role and a daily plan selecting resources by tag
+- [Complete](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/complete) - Customer managed KMS key, compliance vault lock, cross-account copy policy, SNS notifications, air-gapped vault, multi-rule plan
+- [Cross-region copy](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/cross-region-copy) - Secondary vault in another region fed by a copy action
+- [Plan](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/plan) - Plan submodule and root module plans against an existing vault and role
+- [Report](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/report) - Job report plans delivered to an S3 bucket
+- [Restore testing](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/restore-testing) - Weekly restore tests of the protected DynamoDB tables
+- [Framework](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/framework) - AWS Backup Audit Manager controls and their compliance report
 
 ## Module Wrappers
 
-For managing multiple similar resources, see [wrappers](https://github.com/bgauduch/terraform-aws-backup/tree/main/wrappers).
-
-## Tests
-
-Unit tests run against mocked providers and need no AWS credentials:
-
-```bash
-terraform init -backend=false
-terraform test -filter=tests/unit_root.tftest.hcl
-```
-
-Integration tests (`tests/integration_*.tftest.hcl`) and the Terratest suite in [`tests/e2e`](https://github.com/bgauduch/terraform-aws-backup/tree/main/tests/e2e) deploy the examples in a real account, run an on-demand backup and restore of a DynamoDB table, and destroy everything, recovery points included:
-
-```bash
-terraform test -filter=tests/integration_root.tftest.hcl
-cd tests/e2e && go test -v -timeout 120m ./...
-```
+For managing multiple similar resources, see [wrappers](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/wrappers).
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -148,13 +131,13 @@ cd tests/e2e && go test -v -timeout 120m ./...
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.24 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.25 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.24 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.25 |
 
 ## Modules
 
@@ -182,26 +165,30 @@ cd tests/e2e && go test -v -timeout 120m ./...
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
-| <a name="input_name"></a> [name](#input\_name) | Name used as the default for the vault, the IAM role and the air-gapped vault | `string` | n/a | yes |
+| <a name="input_air_gapped_vault_enabled"></a> [air\_gapped\_vault\_enabled](#input\_air\_gapped\_vault\_enabled) | Determines whether a logically air-gapped vault is created | `bool` | `false` | no |
 | <a name="input_air_gapped_vault_kms_key_arn"></a> [air\_gapped\_vault\_kms\_key\_arn](#input\_air\_gapped\_vault\_kms\_key\_arn) | ARN of the KMS key used to encrypt the logically air-gapped vault. Defaults to the AWS managed key | `string` | `null` | no |
 | <a name="input_air_gapped_vault_max_retention_days"></a> [air\_gapped\_vault\_max\_retention\_days](#input\_air\_gapped\_vault\_max\_retention\_days) | The maximum retention period, in days, that the logically air-gapped vault retains its recovery points | `number` | `35` | no |
 | <a name="input_air_gapped_vault_min_retention_days"></a> [air\_gapped\_vault\_min\_retention\_days](#input\_air\_gapped\_vault\_min\_retention\_days) | The minimum retention period, in days, that the logically air-gapped vault retains its recovery points | `number` | `7` | no |
 | <a name="input_air_gapped_vault_name"></a> [air\_gapped\_vault\_name](#input\_air\_gapped\_vault\_name) | Name of the logically air-gapped vault. Defaults to `<name>-air-gapped` | `string` | `null` | no |
+| <a name="input_attach_iam_role_additional_policy"></a> [attach\_iam\_role\_additional\_policy](#input\_attach\_iam\_role\_additional\_policy) | Determines whether `iam_role_additional_policy_json` is attached inline to the IAM role | `bool` | `false` | no |
 | <a name="input_attach_vault_policy"></a> [attach\_vault\_policy](#input\_attach\_vault\_policy) | Determines whether `vault_policy` is attached to the backup vault. The statements generated from `vault_copy_source_account_ids` are attached regardless | `bool` | `false` | no |
 | <a name="input_create"></a> [create](#input\_create) | Determines whether resources will be created (affects all resources) | `bool` | `true` | no |
-| <a name="input_create_air_gapped_vault"></a> [create\_air\_gapped\_vault](#input\_create\_air\_gapped\_vault) | Determines whether a logically air-gapped vault is created | `bool` | `false` | no |
 | <a name="input_create_iam_role"></a> [create\_iam\_role](#input\_create\_iam\_role) | Determines whether the IAM role assumed by AWS Backup is created. Set to `false` to use `iam_role_arn` | `bool` | `true` | no |
-| <a name="input_create_iam_role_additional_policy"></a> [create\_iam\_role\_additional\_policy](#input\_create\_iam\_role\_additional\_policy) | Determines whether `iam_role_additional_policy_json` is attached inline to the IAM role | `bool` | `false` | no |
 | <a name="input_create_vault"></a> [create\_vault](#input\_create\_vault) | Determines whether a backup vault is created. Set to `false` to target an existing vault through `existing_vault_name` | `bool` | `true` | no |
 | <a name="input_existing_vault_name"></a> [existing\_vault\_name](#input\_existing\_vault\_name) | Name of an existing backup vault targeted by the plans and notifications when `create_vault` is `false` | `string` | `null` | no |
 | <a name="input_iam_role_additional_policy_arns"></a> [iam\_role\_additional\_policy\_arns](#input\_iam\_role\_additional\_policy\_arns) | List of additional IAM policy ARNs attached to the IAM role, for example `AWSBackupServiceRolePolicyForItemRestores` | `list(string)` | `[]` | no |
-| <a name="input_iam_role_additional_policy_json"></a> [iam\_role\_additional\_policy\_json](#input\_iam\_role\_additional\_policy\_json) | IAM policy document (JSON) attached inline to the IAM role when `create_iam_role_additional_policy` is `true`, for example KMS permissions on the keys of the protected resources | `string` | `null` | no |
+| <a name="input_iam_role_additional_policy_json"></a> [iam\_role\_additional\_policy\_json](#input\_iam\_role\_additional\_policy\_json) | IAM policy document (JSON) attached inline to the IAM role when `attach_iam_role_additional_policy` is `true`, for example KMS permissions on the keys of the protected resources | `string` | `null` | no |
+| <a name="input_iam_role_additional_policy_name"></a> [iam\_role\_additional\_policy\_name](#input\_iam\_role\_additional\_policy\_name) | Name of the inline policy attached to the IAM role when `attach_iam_role_additional_policy` is `true` | `string` | `"additional"` | no |
 | <a name="input_iam_role_arn"></a> [iam\_role\_arn](#input\_iam\_role\_arn) | ARN of an existing IAM role assumed by AWS Backup for the selections when `create_iam_role` is `false`. Can be overridden per plan | `string` | `null` | no |
 | <a name="input_iam_role_attach_s3_policies"></a> [iam\_role\_attach\_s3\_policies](#input\_iam\_role\_attach\_s3\_policies) | Determines whether the AWS managed policies for S3 backup and restore are attached to the IAM role | `bool` | `true` | no |
+| <a name="input_iam_role_force_detach_policies"></a> [iam\_role\_force\_detach\_policies](#input\_iam\_role\_force\_detach\_policies) | Determines whether policies attached to the IAM role are detached before the role is destroyed | `bool` | `true` | no |
+| <a name="input_iam_role_max_session_duration"></a> [iam\_role\_max\_session\_duration](#input\_iam\_role\_max\_session\_duration) | Maximum session duration, in seconds, of the IAM role | `number` | `null` | no |
 | <a name="input_iam_role_name"></a> [iam\_role\_name](#input\_iam\_role\_name) | Name of the IAM role. Defaults to `<name>-backup` | `string` | `null` | no |
 | <a name="input_iam_role_path"></a> [iam\_role\_path](#input\_iam\_role\_path) | Path of the IAM role | `string` | `null` | no |
 | <a name="input_iam_role_permissions_boundary"></a> [iam\_role\_permissions\_boundary](#input\_iam\_role\_permissions\_boundary) | ARN of the policy used as the permissions boundary of the IAM role | `string` | `null` | no |
-| <a name="input_plans"></a> [plans](#input\_plans) | Map of backup plans to create, keyed by plan name. Each plan has one or more `rules` and zero or more `selections`:<br/>- `name`: plan name, defaults to the map key<br/>- `windows_vss_enabled`: enable Windows VSS backup for EC2 instances<br/>- `iam_role_arn`: IAM role assumed by AWS Backup for the selections of this plan, defaults to the module role<br/>- `rules[]`: `name`, `schedule` (cron), `schedule_expression_timezone`, `start_window`, `completion_window`, `enable_continuous_backup`, `recovery_point_tags`, `target_logically_air_gapped_backup_vault_arn`, `lifecycle` (`cold_storage_after`, `delete_after`, `opt_in_to_archive_for_supported_resources`), `copy_actions[]` (`destination_vault_arn`, `lifecycle`)<br/>- `selections{}`: keyed by selection name: `name`, `resources`, `not_resources`, `selection_tags[]` (`type`, `key`, `value`), `conditions` (`string_equals[]`, `string_like[]`, `string_not_equals[]`, `string_not_like[]` of `key`/`value`) | <pre>map(object({<br/>    name                = optional(string)<br/>    windows_vss_enabled = optional(bool, false)<br/>    iam_role_arn        = optional(string)<br/>    rules = list(object({<br/>      name                                         = string<br/>      schedule                                     = optional(string)<br/>      schedule_expression_timezone                 = optional(string)<br/>      start_window                                 = optional(number)<br/>      completion_window                            = optional(number)<br/>      enable_continuous_backup                     = optional(bool)<br/>      recovery_point_tags                          = optional(map(string))<br/>      target_logically_air_gapped_backup_vault_arn = optional(string)<br/>      lifecycle = optional(object({<br/>        cold_storage_after                        = optional(number)<br/>        delete_after                              = optional(number)<br/>        opt_in_to_archive_for_supported_resources = optional(bool)<br/>      }))<br/>      copy_actions = optional(list(object({<br/>        destination_vault_arn = string<br/>        lifecycle = optional(object({<br/>          cold_storage_after                        = optional(number)<br/>          delete_after                              = optional(number)<br/>          opt_in_to_archive_for_supported_resources = optional(bool)<br/>        }))<br/>      })), [])<br/>    }))<br/>    selections = optional(map(object({<br/>      name          = optional(string)<br/>      resources     = optional(list(string))<br/>      not_resources = optional(list(string))<br/>      selection_tags = optional(list(object({<br/>        type  = string<br/>        key   = string<br/>        value = string<br/>      })), [])<br/>      conditions = optional(object({<br/>        string_equals     = optional(list(object({ key = string, value = string })), [])<br/>        string_like       = optional(list(object({ key = string, value = string })), [])<br/>        string_not_equals = optional(list(object({ key = string, value = string })), [])<br/>        string_not_like   = optional(list(object({ key = string, value = string })), [])<br/>      }))<br/>    })), {})<br/>  }))</pre> | `{}` | no |
+| <a name="input_name"></a> [name](#input\_name) | Name used as the default for the vault, the IAM role and the air-gapped vault | `string` | n/a | yes |
+| <a name="input_plans"></a> [plans](#input\_plans) | Map of backup plans to create, keyed by plan name. Each plan has one or more `rules` and zero or more `selections`:<br/>- `name`: plan name, defaults to the map key<br/>- `windows_vss_enabled`: enable Windows VSS backup for EC2 instances<br/>- `iam_role_arn`: IAM role assumed by AWS Backup for the selections of this plan, defaults to the module role<br/>- `scan_settings[]`: `malware_scanner`, `resource_types`, `scanner_role_arn`<br/>- `rules[]`: `name`, `schedule` (cron), `schedule_expression_timezone`, `start_window`, `completion_window`, `enable_continuous_backup`, `recovery_point_tags`, `target_logically_air_gapped_backup_vault_arn`, `lifecycle` (`cold_storage_after`, `delete_after`, `opt_in_to_archive_for_supported_resources`), `copy_actions[]` (`destination_vault_arn`, `lifecycle`), `scan_actions[]` (`malware_scanner`, `scan_mode`)<br/>- `selections{}`: keyed by selection name: `name`, `resources`, `not_resources`, `selection_tags[]` (`type`, `key`, `value`), `conditions` (`string_equals[]`, `string_like[]`, `string_not_equals[]`, `string_not_like[]` of `key`/`value`) | <pre>map(object({<br/>    name                = optional(string)<br/>    windows_vss_enabled = optional(bool, false)<br/>    iam_role_arn        = optional(string)<br/>    scan_settings = optional(list(object({<br/>      malware_scanner  = string<br/>      resource_types   = list(string)<br/>      scanner_role_arn = string<br/>    })), [])<br/>    rules = list(object({<br/>      name                                         = string<br/>      schedule                                     = optional(string)<br/>      schedule_expression_timezone                 = optional(string)<br/>      start_window                                 = optional(number)<br/>      completion_window                            = optional(number)<br/>      enable_continuous_backup                     = optional(bool)<br/>      recovery_point_tags                          = optional(map(string))<br/>      target_logically_air_gapped_backup_vault_arn = optional(string)<br/>      lifecycle = optional(object({<br/>        cold_storage_after                        = optional(number)<br/>        delete_after                              = optional(number)<br/>        opt_in_to_archive_for_supported_resources = optional(bool)<br/>      }))<br/>      copy_actions = optional(list(object({<br/>        destination_vault_arn = string<br/>        lifecycle = optional(object({<br/>          cold_storage_after                        = optional(number)<br/>          delete_after                              = optional(number)<br/>          opt_in_to_archive_for_supported_resources = optional(bool)<br/>        }))<br/>      })), [])<br/>      scan_actions = optional(list(object({<br/>        malware_scanner = string<br/>        scan_mode       = string<br/>      })), [])<br/>    }))<br/>    selections = optional(map(object({<br/>      name          = optional(string)<br/>      resources     = optional(list(string))<br/>      not_resources = optional(list(string))<br/>      selection_tags = optional(list(object({<br/>        type  = string<br/>        key   = string<br/>        value = string<br/>      })), [])<br/>      conditions = optional(object({<br/>        string_equals     = optional(list(object({ key = string, value = string })), [])<br/>        string_like       = optional(list(object({ key = string, value = string })), [])<br/>        string_not_equals = optional(list(object({ key = string, value = string })), [])<br/>        string_not_like   = optional(list(object({ key = string, value = string })), [])<br/>      }))<br/>    })), {})<br/>  }))</pre> | `{}` | no |
+| <a name="input_putin_khuylo"></a> [putin\_khuylo](#input\_putin\_khuylo) | Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo! | `bool` | `true` | no |
 | <a name="input_region"></a> [region](#input\_region) | Region where the resource(s) will be managed. Defaults to the Region set in the provider configuration | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |
 | <a name="input_vault_copy_source_account_ids"></a> [vault\_copy\_source\_account\_ids](#input\_vault\_copy\_source\_account\_ids) | List of AWS account IDs allowed to copy recovery points into the backup vault (cross-account backup) | `list(string)` | `[]` | no |
@@ -225,6 +212,7 @@ cd tests/e2e && go test -v -timeout 120m ./...
 | <a name="output_air_gapped_vault_id"></a> [air\_gapped\_vault\_id](#output\_air\_gapped\_vault\_id) | The name of the logically air-gapped vault |
 | <a name="output_iam_role_arn"></a> [iam\_role\_arn](#output\_iam\_role\_arn) | The ARN of the IAM role used by backup selections, created or provided |
 | <a name="output_iam_role_name"></a> [iam\_role\_name](#output\_iam\_role\_name) | The name of the IAM role created by the module |
+| <a name="output_iam_role_unique_id"></a> [iam\_role\_unique\_id](#output\_iam\_role\_unique\_id) | Stable and unique string identifying the IAM role created by the module |
 | <a name="output_plans"></a> [plans](#output\_plans) | Map of backup plans created, keyed by plan key, with `id`, `arn` and `version` |
 | <a name="output_selections"></a> [selections](#output\_selections) | Map of backup selection IDs, keyed by `<plan key>/<selection key>` |
 | <a name="output_vault_arn"></a> [vault\_arn](#output\_vault\_arn) | The ARN of the backup vault |
@@ -236,8 +224,8 @@ cd tests/e2e && go test -v -timeout 120m ./...
 
 ## Authors
 
-Module is maintained by [Baptiste Gauduchon](https://github.com/bgauduch).
+Module is maintained by [Baptiste Gauduchon](https://github.com/terraform-aws-modules).
 
 ## License
 
-Apache 2 Licensed. See [LICENSE](https://github.com/bgauduch/terraform-aws-backup/tree/main/LICENSE) for full details.
+Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/LICENSE) for full details.
