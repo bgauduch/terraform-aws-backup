@@ -12,9 +12,9 @@ This wrapper does not implement any extra functionality.
 
 ```hcl
 terraform {
-  source = "tfr:///bgauduch/backup/aws//wrappers/restore-testing"
+  source = "tfr:///terraform-aws-modules/backup-tam-review/aws//wrappers/restore-testing"
   # Alternative source:
-  # source = "git::git@github.com:bgauduch/terraform-aws-backup.git//wrappers/restore-testing?ref=master"
+  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-backup-tam-review.git//wrappers/restore-testing?ref=master"
 }
 
 inputs = {
@@ -42,7 +42,7 @@ inputs = {
 
 ```hcl
 module "wrapper" {
-  source = "bgauduch/backup/aws//wrappers/restore-testing"
+  source = "terraform-aws-modules/backup-tam-review/aws//wrappers/restore-testing"
 
   defaults = { # Default values
     create = true
@@ -70,9 +70,9 @@ module "wrapper" {
 
 ```hcl
 terraform {
-  source = "tfr:///bgauduch/backup/aws//wrappers/restore-testing"
+  source = "tfr:///terraform-aws-modules/backup-tam-review/aws//wrappers/restore-testing"
   # Alternative source:
-  # source = "git::git@github.com:bgauduch/terraform-aws-backup.git//wrappers/restore-testing?ref=master"
+  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-backup-tam-review.git//wrappers/restore-testing?ref=master"
 }
 
 inputs = {

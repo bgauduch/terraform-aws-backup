@@ -1,12 +1,12 @@
 # AWS Backup Framework Submodule
 
-Terraform submodule which creates an AWS Backup Audit Manager framework made of the given controls. An active AWS Config recorder is required in the region; the module does not manage it. See the [framework example](https://github.com/bgauduch/terraform-aws-backup/tree/main/examples/framework).
+Terraform submodule which creates an AWS Backup Audit Manager framework made of the given controls. An active AWS Config recorder is required in the region; the module does not manage it. See the [framework example](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/framework).
 
 ## Usage
 
 ```hcl
 module "framework" {
-  source = "bgauduch/backup/aws//modules/framework"
+  source = "terraform-aws-modules/backup/aws//modules/framework"
 
   name = "application"
 

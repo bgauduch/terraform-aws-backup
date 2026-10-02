@@ -6,7 +6,7 @@ Terraform submodule which creates one backup plan with its rules and resource se
 
 ```hcl
 module "plan" {
-  source = "bgauduch/backup/aws//modules/plan"
+  source = "terraform-aws-modules/backup/aws//modules/plan"
 
   name         = "daily"
   vault_name   = "application"

@@ -1,12 +1,12 @@
 # AWS Backup Report Submodule
 
-Terraform submodule which creates one report plan per template, delivered to an existing S3 bucket. The bucket policy must allow the service-linked role `AWSServiceRoleForBackupReports` to put objects; see the [report example](https://github.com/bgauduch/terraform-aws-backup/tree/main/examples/report). Compliance templates require `framework_arns`.
+Terraform submodule which creates one report plan per template, delivered to an existing S3 bucket. The bucket policy must allow the service-linked role `AWSServiceRoleForBackupReports` to put objects; see the [report example](https://github.com/terraform-aws-modules/terraform-aws-backup/tree/main/examples/report). Compliance templates require `framework_arns`.
 
 ## Usage
 
 ```hcl
 module "report" {
-  source = "bgauduch/backup/aws//modules/report"
+  source = "terraform-aws-modules/backup/aws//modules/report"
 
   name           = "application"
   s3_bucket_name = "application-backup-reports"

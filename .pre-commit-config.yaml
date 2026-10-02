@@ -4,9 +4,6 @@ repos:
     hooks:
       - id: terraform_fmt
       - id: terraform_wrapper_module_for_each
-        args:
-          - '--hook-config=--tool-version=0.2.18'
-          - '--args=--module-repo-org=bgauduch'
       - id: terraform_docs
         args:
           - '--args=--lockfile=false'
