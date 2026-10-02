@@ -13,6 +13,7 @@ module "plan" {
   vault_name          = local.target_vault_name
   iam_role_arn        = each.value.iam_role_arn != null ? each.value.iam_role_arn : local.iam_role_arn
   windows_vss_enabled = each.value.windows_vss_enabled
+  scan_settings       = each.value.scan_settings
   rules               = each.value.rules
   selections          = each.value.selections
 

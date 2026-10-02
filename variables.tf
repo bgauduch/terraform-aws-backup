@@ -257,6 +257,18 @@ variable "iam_role_permissions_boundary" {
   default     = null
 }
 
+variable "iam_role_max_session_duration" {
+  description = "Maximum session duration, in seconds, of the IAM role"
+  type        = number
+  default     = null
+}
+
+variable "iam_role_force_detach_policies" {
+  description = "Determines whether policies attached to the IAM role are detached before the role is destroyed"
+  type        = bool
+  default     = true
+}
+
 variable "iam_role_attach_s3_policies" {
   description = "Determines whether the AWS managed policies for S3 backup and restore are attached to the IAM role"
   type        = bool
@@ -273,6 +285,12 @@ variable "attach_iam_role_additional_policy" {
   description = "Determines whether `iam_role_additional_policy_json` is attached inline to the IAM role"
   type        = bool
   default     = false
+}
+
+variable "iam_role_additional_policy_name" {
+  description = "Name of the inline policy attached to the IAM role when `attach_iam_role_additional_policy` is `true`"
+  type        = string
+  default     = "additional"
 }
 
 variable "iam_role_additional_policy_json" {
@@ -296,13 +314,19 @@ variable "plans" {
   - `name`: plan name, defaults to the map key
   - `windows_vss_enabled`: enable Windows VSS backup for EC2 instances
   - `iam_role_arn`: IAM role assumed by AWS Backup for the selections of this plan, defaults to the module role
-  - `rules[]`: `name`, `schedule` (cron), `schedule_expression_timezone`, `start_window`, `completion_window`, `enable_continuous_backup`, `recovery_point_tags`, `target_logically_air_gapped_backup_vault_arn`, `lifecycle` (`cold_storage_after`, `delete_after`, `opt_in_to_archive_for_supported_resources`), `copy_actions[]` (`destination_vault_arn`, `lifecycle`)
+  - `scan_settings[]`: `malware_scanner`, `resource_types`, `scanner_role_arn`
+  - `rules[]`: `name`, `schedule` (cron), `schedule_expression_timezone`, `start_window`, `completion_window`, `enable_continuous_backup`, `recovery_point_tags`, `target_logically_air_gapped_backup_vault_arn`, `lifecycle` (`cold_storage_after`, `delete_after`, `opt_in_to_archive_for_supported_resources`), `copy_actions[]` (`destination_vault_arn`, `lifecycle`), `scan_actions[]` (`malware_scanner`, `scan_mode`)
   - `selections{}`: keyed by selection name: `name`, `resources`, `not_resources`, `selection_tags[]` (`type`, `key`, `value`), `conditions` (`string_equals[]`, `string_like[]`, `string_not_equals[]`, `string_not_like[]` of `key`/`value`)
   EOT
   type = map(object({
     name                = optional(string)
     windows_vss_enabled = optional(bool, false)
     iam_role_arn        = optional(string)
+    scan_settings = optional(list(object({
+      malware_scanner  = string
+      resource_types   = list(string)
+      scanner_role_arn = string
+    })), [])
     rules = list(object({
       name                                         = string
       schedule                                     = optional(string)
@@ -324,6 +348,10 @@ variable "plans" {
           delete_after                              = optional(number)
           opt_in_to_archive_for_supported_resources = optional(bool)
         }))
+      })), [])
+      scan_actions = optional(list(object({
+        malware_scanner = string
+        scan_mode       = string
       })), [])
     }))
     selections = optional(map(object({

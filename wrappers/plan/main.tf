@@ -8,6 +8,7 @@ module "wrapper" {
   name                = try(each.value.name, var.defaults.name)
   region              = try(each.value.region, var.defaults.region, null)
   rules               = try(each.value.rules, var.defaults.rules)
+  scan_settings       = try(each.value.scan_settings, var.defaults.scan_settings, [])
   selections          = try(each.value.selections, var.defaults.selections, {})
   tags                = try(each.value.tags, var.defaults.tags, {})
   vault_name          = try(each.value.vault_name, var.defaults.vault_name)

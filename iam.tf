@@ -45,6 +45,9 @@ resource "aws_iam_role" "this" {
   assume_role_policy   = data.aws_iam_policy_document.assume_role[0].json
   permissions_boundary = var.iam_role_permissions_boundary
 
+  max_session_duration  = var.iam_role_max_session_duration
+  force_detach_policies = var.iam_role_force_detach_policies
+
   tags = var.tags
 }
 
@@ -58,7 +61,7 @@ resource "aws_iam_role_policy_attachment" "this" {
 resource "aws_iam_role_policy" "additional" {
   count = local.create_iam_role && var.attach_iam_role_additional_policy ? 1 : 0
 
-  name   = "additional"
+  name   = var.iam_role_additional_policy_name
   role   = aws_iam_role.this[0].name
   policy = var.iam_role_additional_policy_json
 
