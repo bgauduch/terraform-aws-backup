@@ -7,8 +7,13 @@ on:
       - master
 
 env:
+  # renovate: datasource=github-releases depName=terraform-docs/terraform-docs
   TERRAFORM_DOCS_VERSION: v0.24.0
+  # renovate: datasource=github-releases depName=terraform-linters/tflint
   TFLINT_VERSION: v0.64.0
+
+permissions:
+  contents: read
 
 jobs:
   collectInputs:
@@ -44,8 +49,8 @@ jobs:
       # https://github.com/orgs/community/discussions/25678#discussioncomment-5242449
       - name: Delete unnecessary files
         run: |
-          formatByteCount() { echo $(numfmt --to=iec-i --suffix=B --padding=7 $1'000'); }
-          getAvailableSpace() { echo $(df -a $1 | awk 'NR > 1 {avail+=$4} END {print avail}'); }
+          formatByteCount() { numfmt --to=iec-i --suffix=B --padding=7 "${1}000"; }
+          getAvailableSpace() { df -a | awk 'NR > 1 {avail+=$4} END {print avail}'; }
 
           BEFORE=$(getAvailableSpace)
 
@@ -106,8 +111,8 @@ jobs:
       # https://github.com/orgs/community/discussions/25678#discussioncomment-5242449
       - name: Delete unnecessary files
         run: |
-          formatByteCount() { echo $(numfmt --to=iec-i --suffix=B --padding=7 $1'000'); }
-          getAvailableSpace() { echo $(df -a $1 | awk 'NR > 1 {avail+=$4} END {print avail}'); }
+          formatByteCount() { numfmt --to=iec-i --suffix=B --padding=7 "${1}000"; }
+          getAvailableSpace() { df -a | awk 'NR > 1 {avail+=$4} END {print avail}'; }
 
           BEFORE=$(getAvailableSpace)
 
@@ -118,29 +123,6 @@ jobs:
           rmz -f /opt/hostedtoolcache/Ruby &
           rmz -f /opt/hostedtoolcache/go &
           sudo rmz -f /usr/local/lib/android &
-
-          if [[ ${{ github.repository }} == terraform-aws-modules/terraform-aws-security-group ]]; then
-            sudo rmz -f /usr/share/dotnet &
-            sudo rmz -f /usr/local/.ghcup &
-            # Disk cleanup is best-effort; tolerate transient apt mirror failures
-            set +e
-            sudo apt-get -qq update -y
-            sudo apt-get -qq remove -y --fix-missing 'azure-.*'
-            sudo apt-get -qq remove -y --fix-missing 'cpp-.*'
-            sudo apt-get -qq remove -y --fix-missing 'dotnet-runtime-.*'
-            sudo apt-get -qq remove -y --fix-missing 'google-.*'
-            sudo apt-get -qq remove -y --fix-missing 'libclang-.*'
-            sudo apt-get -qq remove -y --fix-missing 'libllvm.*'
-            sudo apt-get -qq remove -y --fix-missing 'llvm-.*'
-            sudo apt-get -qq remove -y --fix-missing 'mysql-.*'
-            sudo apt-get -qq remove -y --fix-missing 'postgresql-.*'
-            sudo apt-get -qq remove -y --fix-missing 'php.*'
-            sudo apt-get -qq remove -y --fix-missing 'temurin-.*'
-            sudo apt-get -qq remove -y --fix-missing kubectl firefox mono-devel
-            sudo apt-get -qq autoremove -y
-            sudo apt-get -qq clean
-            set -e
-          fi
 
           wait
 
@@ -157,11 +139,6 @@ jobs:
       - name: Terraform min/max versions
         id: minMax
         uses: clowdhaus/terraform-min-max@v3.0.1
-
-      - name: Hide template dir
-        # Special to this repo, we don't want to check this dir
-        if: ${{ github.repository ==  'terraform-aws-modules/terraform-aws-security-group' }}
-        run: rm -rf modules/_templates
 
       - name: Pre-commit Terraform ${{ steps.minMax.outputs.maxVersion }}
         uses: clowdhaus/terraform-composite-actions/pre-commit@v1.14.0

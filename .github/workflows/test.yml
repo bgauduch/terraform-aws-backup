@@ -6,6 +6,9 @@ on:
       - main
       - master
 
+permissions:
+  contents: read
+
 jobs:
   unit:
     name: Terraform unit tests (mocked providers)
@@ -17,6 +20,8 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
         with:
+          # renovate: datasource=github-releases depName=hashicorp/terraform extractVersion=^v(?<version>.*)$
+          terraform_version: 1.16.4
           terraform_wrapper: false
 
       - name: Init
