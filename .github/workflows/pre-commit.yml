@@ -119,29 +119,6 @@ jobs:
           rmz -f /opt/hostedtoolcache/go &
           sudo rmz -f /usr/local/lib/android &
 
-          if [[ ${{ github.repository }} == terraform-aws-modules/terraform-aws-security-group ]]; then
-            sudo rmz -f /usr/share/dotnet &
-            sudo rmz -f /usr/local/.ghcup &
-            # Disk cleanup is best-effort; tolerate transient apt mirror failures
-            set +e
-            sudo apt-get -qq update -y
-            sudo apt-get -qq remove -y --fix-missing 'azure-.*'
-            sudo apt-get -qq remove -y --fix-missing 'cpp-.*'
-            sudo apt-get -qq remove -y --fix-missing 'dotnet-runtime-.*'
-            sudo apt-get -qq remove -y --fix-missing 'google-.*'
-            sudo apt-get -qq remove -y --fix-missing 'libclang-.*'
-            sudo apt-get -qq remove -y --fix-missing 'libllvm.*'
-            sudo apt-get -qq remove -y --fix-missing 'llvm-.*'
-            sudo apt-get -qq remove -y --fix-missing 'mysql-.*'
-            sudo apt-get -qq remove -y --fix-missing 'postgresql-.*'
-            sudo apt-get -qq remove -y --fix-missing 'php.*'
-            sudo apt-get -qq remove -y --fix-missing 'temurin-.*'
-            sudo apt-get -qq remove -y --fix-missing kubectl firefox mono-devel
-            sudo apt-get -qq autoremove -y
-            sudo apt-get -qq clean
-            set -e
-          fi
-
           wait
 
           AFTER=$(getAvailableSpace)
@@ -157,11 +134,6 @@ jobs:
       - name: Terraform min/max versions
         id: minMax
         uses: clowdhaus/terraform-min-max@v3.0.1
-
-      - name: Hide template dir
-        # Special to this repo, we don't want to check this dir
-        if: ${{ github.repository ==  'terraform-aws-modules/terraform-aws-security-group' }}
-        run: rm -rf modules/_templates
 
       - name: Pre-commit Terraform ${{ steps.minMax.outputs.maxVersion }}
         uses: clowdhaus/terraform-composite-actions/pre-commit@v1.14.0
