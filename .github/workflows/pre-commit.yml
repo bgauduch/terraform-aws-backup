@@ -49,8 +49,8 @@ jobs:
       # https://github.com/orgs/community/discussions/25678#discussioncomment-5242449
       - name: Delete unnecessary files
         run: |
-          formatByteCount() { echo $(numfmt --to=iec-i --suffix=B --padding=7 $1'000'); }
-          getAvailableSpace() { echo $(df -a $1 | awk 'NR > 1 {avail+=$4} END {print avail}'); }
+          formatByteCount() { numfmt --to=iec-i --suffix=B --padding=7 "${1}000"; }
+          getAvailableSpace() { df -a | awk 'NR > 1 {avail+=$4} END {print avail}'; }
 
           BEFORE=$(getAvailableSpace)
 
@@ -111,8 +111,8 @@ jobs:
       # https://github.com/orgs/community/discussions/25678#discussioncomment-5242449
       - name: Delete unnecessary files
         run: |
-          formatByteCount() { echo $(numfmt --to=iec-i --suffix=B --padding=7 $1'000'); }
-          getAvailableSpace() { echo $(df -a $1 | awk 'NR > 1 {avail+=$4} END {print avail}'); }
+          formatByteCount() { numfmt --to=iec-i --suffix=B --padding=7 "${1}000"; }
+          getAvailableSpace() { df -a | awk 'NR > 1 {avail+=$4} END {print avail}'; }
 
           BEFORE=$(getAvailableSpace)
 
