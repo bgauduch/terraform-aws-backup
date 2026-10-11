@@ -2,11 +2,34 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    ":semanticCommits"
+    ":semanticCommits",
+    "helpers:pinGitHubActionDigests"
   ],
   "ignorePaths": [],
   "commitMessageLowerCase": "never",
   "pre-commit": {
     "enabled": true
-  }
+  },
+  "customManagers": [
+    {
+      "description": "Versions annotated with a `# renovate:` comment on the line above",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/[^/]+\\.ya?ml$/",
+        "/^\\.pre-commit-config\\.yaml$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( extractVersion=(?<extractVersion>\\S+))?\\n[^\\n]*?[=:] ?['\"]?(?<currentValue>v?\\d+\\.\\d+\\.\\d+)"
+      ]
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "v10 renders empty release notes with semantic-release 25, see https://github.com/semantic-release/release-notes-generator/issues/992",
+      "matchPackageNames": [
+        "conventional-changelog-conventionalcommits"
+      ],
+      "allowedVersions": "<10"
+    }
+  ]
 }
