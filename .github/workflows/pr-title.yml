@@ -23,7 +23,12 @@ jobs:
           types: |
             fix
             feat
+            perf
+            refactor
+            revert
             docs
+            test
+            build
             ci
             chore
           # Configure that a scope must always be provided.
