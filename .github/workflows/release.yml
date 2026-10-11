@@ -12,6 +12,10 @@ on:
       - '**/*.tf'
       - '.github/workflows/release.yml'
 
+# Release pushes with SEMANTIC_RELEASE_TOKEN, not GITHUB_TOKEN
+permissions:
+  contents: read
+
 jobs:
   release:
     name: Release

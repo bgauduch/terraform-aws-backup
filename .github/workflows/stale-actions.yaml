@@ -3,6 +3,14 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
+permissions:
+  # delete-branch: true deletes the head branch of closed PRs
+  contents: write
+  issues: write
+  pull-requests: write
+  # actions/stale keeps its state in the Actions cache
+  actions: write
+
 jobs:
   stale:
     runs-on: ubuntu-latest

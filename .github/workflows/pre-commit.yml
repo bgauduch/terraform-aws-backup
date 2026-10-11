@@ -10,6 +10,9 @@ env:
   TERRAFORM_DOCS_VERSION: v0.24.0
   TFLINT_VERSION: v0.64.0
 
+permissions:
+  contents: read
+
 jobs:
   collectInputs:
     name: Collect workflow inputs
