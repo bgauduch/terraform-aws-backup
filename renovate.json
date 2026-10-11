@@ -4,6 +4,7 @@
     "config:recommended",
     ":semanticCommits"
   ],
+  "ignorePaths": [],
   "commitMessageLowerCase": "never",
   "pre-commit": {
     "enabled": true
