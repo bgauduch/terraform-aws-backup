@@ -3,7 +3,7 @@
   "extends": [
     "config:recommended",
     ":semanticCommits",
-    "helpers:pinGitHubActionDigests"
+    "helpers:pinGitHubActionDigestsToSemver"
   ],
   "ignorePaths": [],
   "commitMessageLowerCase": "never",
@@ -23,6 +23,9 @@
       ]
     }
   ],
+  "postUpdateOptions": [
+    "gomodTidy"
+  ],
   "packageRules": [
     {
       "description": "v10 renders empty release notes with semantic-release 25, see https://github.com/semantic-release/release-notes-generator/issues/992",
@@ -30,6 +33,13 @@
         "conventional-changelog-conventionalcommits"
       ],
       "allowedVersions": "<10"
+    },
+    {
+      "description": "Test-only Go module: its updates must not cut a release",
+      "matchFileNames": [
+        "tests/e2e/**"
+      ],
+      "semanticCommitType": "chore"
     }
   ]
 }
