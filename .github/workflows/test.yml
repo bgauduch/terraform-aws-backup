@@ -29,3 +29,20 @@ jobs:
 
       - name: Unit tests
         run: terraform test -filter=tests/unit_root.tftest.hcl -filter=tests/unit_plan.tftest.hcl -filter=tests/unit_report.tftest.hcl -filter=tests/unit_restore_testing.tftest.hcl -filter=tests/unit_framework.tftest.hcl
+
+  e2e-build:
+    name: E2E tests build (no AWS)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: tests/e2e/go.mod
+          cache-dependency-path: tests/e2e/go.sum
+
+      - name: Vet
+        working-directory: tests/e2e
+        run: go vet ./...
