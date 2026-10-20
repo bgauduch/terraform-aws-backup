@@ -5,9 +5,9 @@ go 1.26.0
 require (
 	github.com/aws/aws-sdk-go-v2 v1.47.3
 	github.com/aws/aws-sdk-go-v2/config v1.33.9
-	github.com/aws/aws-sdk-go-v2/service/backup v1.69.1
-	github.com/aws/aws-sdk-go-v2/service/configservice v1.74.4
-	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.70.3
+	github.com/aws/aws-sdk-go-v2/service/backup v1.69.2
+	github.com/aws/aws-sdk-go-v2/service/configservice v1.74.5
+	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.71.0
 	github.com/gruntwork-io/terratest v1.0.1
 	github.com/stretchr/testify v1.12.1
 )
