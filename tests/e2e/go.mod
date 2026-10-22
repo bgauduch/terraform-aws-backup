@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.33.9
 	github.com/aws/aws-sdk-go-v2/service/backup v1.69.2
 	github.com/aws/aws-sdk-go-v2/service/configservice v1.74.5
-	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.71.0
+	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.72.0
 	github.com/gruntwork-io/terratest v1.0.1
 	github.com/stretchr/testify v1.12.1
 )
