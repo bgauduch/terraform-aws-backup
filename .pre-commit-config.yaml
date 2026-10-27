@@ -6,7 +6,7 @@ repos:
       - id: terraform_wrapper_module_for_each
         args:
           # renovate: datasource=github-releases depName=minamijoyo/hcledit extractVersion=^v(?<version>.*)$
-          - '--hook-config=--tool-version=0.2.18'
+          - '--hook-config=--tool-version=0.2.19'
           - '--args=--module-repo-org=bgauduch'
       - id: terraform_docs
         args:
